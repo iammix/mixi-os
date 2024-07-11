@@ -42,49 +42,49 @@ div {
 @keyframes blink {
   from,
   to {
-      background-color: transparent;
+    background-color: transparent;
   }
   50% {
-      background-color: white;
+    background-color: white;
   }
 }
 
 @-moz-keyframes blink {
   from,
   to {
-      background-color: transparent;
+    background-color: transparent;
   }
   50% {
-      background-color: white;
+    background-color: white;
   }
 }
 
 @-webkit-keyframes blink {
   from,
   to {
-      background-color: transparent;
+    background-color: transparent;
   }
   50% {
-      background-color: white;
+    background-color: white;
   }
 }
 
 @-ms-keyframes blink {
   from,
   to {
-      background-color: transparent;
+    background-color: transparent;
   }
   50% {
-      background-color: white;
+    background-color: white;
   }
 }
 
 @-o-keyframes blink {
   from,
   to {
-      background-color: transparent;
+    background-color: transparent;
   }
   50% {
-      background-color: white;
+    background-color: white;
   }
 }
