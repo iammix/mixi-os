@@ -89,8 +89,6 @@ const Contact: React.FC<ContactProps> = (props) => {
                     back-end engineer.
                 </p>
             </div>
-
-
         </div>
     )
 
