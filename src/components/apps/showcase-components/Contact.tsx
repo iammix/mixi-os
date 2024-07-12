@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import colors from '../../../constants/colors';
-import twitterIcon from '../../../assets/pictures/twitter.png';
+import xIcon from '../../../assets/pictures/xIcon.png';
 import githubIcon from '../../../assets/pictures/github.png';
 import linkedInIcon from '../../../assets/pictures/linkedin.png';
+import CvDownload from "./CvDownload.tsx";
 
 interface ContactProps {}
 
@@ -78,19 +79,100 @@ const Contact: React.FC<ContactProps> = (props) => {
                         link={'https://www.linkedin.com/in/konstantinosmixios'}
                     />
                     <SocialBox
-                        icon={twitterIcon}
+                        // TODO: Create a more blurry X icon
+                        icon={xIcon}
                         link={'https://www.x.com/iammix95'}
                     />
                 </div>
             </div>
-            <div>
+            <div className='text-block'>
                 <p>
-                    I am currently working on different projects as a Software Engineer. Specifically working as a
-                    back-end engineer.
+                    I'm excited to connect with you! Whether you have a question, a project idea,
+                    or just want to say hello, feel free to reach out.
+                    Please fill out the form below, and I'll get back to you as soon as possible.
                 </p>
+                <br />
+                <p>
+                    <b>Email: </b>
+                    <a href='mailto:contact@mixiosk.com'>contact@mixiosk.com</a>
+                </p>
+                <div style={styles.form}>
+                    <label>
+                        <p>
+                            {!name && <span style={styles.star}>*</span>}
+                            <b>Name:</b>
+                        </p>
+                    </label>
+                    <input
+                        style={styles.formItem}
+                        type='text'
+                        name='name'
+                        placeholder='Name'
+                        value={name}
+                        onChange={(e)=>setName(e.target.value)}
+                    />
+                    <label>
+                    <p>
+                        {!validateEmail(email) && (<span style={styles.star}>*</span>)}
+                        <b>Email:</b>
+                    </p>
+                    </label>
+                    <input
+                        style={styles.formItem}
+                        type='email'
+                        name='email'
+                        placeholder='Email'
+                        value={email}
+                        onChange={(e)=>setEmail(e.target.value)}
+                    />
+                    <label>
+                        <p>
+                            {!message && <span style={styles.star}>*</span>}
+                            <b>Message:</b>
+                        </p>
+                    </label>
+                    <textarea
+                        name='message'
+                        placeholder='Message'
+                        style={styles.formItem}
+                        value={message}
+                        onChange={(e)=>setMessage(e.target.value)}
+                    />
+                    <div>
+                        {/*TODO: add functionality to the submit button */}
+                        <button>
+                            {!isLoading ? (
+                                'Send Message'
+                            ) : (
+                                <p className='loading'>Sending</p>
+                            )}
+                        </button>
+                        {/*<div style={styles.formInfo}>*/}
+                        {/*    <p style={Object.assign({}, {color: formMessageColor})}>*/}
+                        {/*        <b>*/}
+                        {/*            <sub>*/}
+                        {/*                {formMessage ? `${formMessage}`: 'All messages get forwarded to my personal email'}*/}
+                        {/*            </sub>*/}
+                        {/*        </b>*/}
+                        {/*    </p>*/}
+                        {/*    <p>*/}
+                        {/*        <sub>*/}
+                        {/*            {!isFormValid ? (*/}
+                        {/*                <span>*/}
+                        {/*                    <b style={styles.star}>*</b>*/}
+                        {/*                </span>*/}
+                        {/*            ) : (*/}
+                        {/*                '\xa0'*/}
+                        {/*            )}*/}
+                        {/*        </sub>*/}
+                        {/*    </p>*/}
+                        {/*</div>*/}
+                    </div>
+                </div>
             </div>
+            <CvDownload altText='Need a copy of me CV?!'/>
         </div>
-    )
+    );
 
 }
 

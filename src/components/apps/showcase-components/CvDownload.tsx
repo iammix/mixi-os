@@ -8,9 +8,9 @@ export interface CvDownloadProps {
 
 const CvDownload: React.FC<CvDownloadProps> = ({ altText }) => {
     return (
-        <div>
-            <img src={printer}/>
-            <div>
+        <div style={styles.cvContainer}>
+            <img style={styles.cvPrinter} src={printer}/>
+            <div style={styles.cvContainerText}>
                 <h3>{altText ? altText: 'Looking for my CV?'}</h3>
                 <a rel="noreferrer" target='_blank' href={CV}>
                     <p>Click here to download CV!</p>
@@ -21,5 +21,25 @@ const CvDownload: React.FC<CvDownloadProps> = ({ altText }) => {
     )
 };
 
+const styles: StyleSheetCSS = {
+    cvContainer: {
+        backgroundColor: 'white',
+        padding: 12,
+        boxSizing: 'border-box',
+        border: '2px solid black',
+        borderLeftWidth: 0,
+        borderRightWidth: 0,
+        width: '100%',
+        alignItems: 'center',
+    },
+    cvContainerText: {
+        flexDirection: 'column',
+    },
+    cvPrinter: {
+        width: 56,
+        height: 48,
+        paddingRight: 24,
+    },
+};
 
 export default CvDownload;
