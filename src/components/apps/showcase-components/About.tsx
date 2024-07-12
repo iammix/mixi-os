@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CvDownload from './CvDownload';
+import me from '../../../assets/pictures/curme.jpg'
 
-interface AboutPros {}
+interface AboutProps {}
 
 const About: React.FC<AboutProps> = (props) => {
     return (
@@ -28,12 +29,40 @@ const About: React.FC<AboutProps> = (props) => {
                 <p>
                     {/* TODO: Write a small paragraph about me */}
                 </p>
+                <br/>
+                <p>
+                    I started programming more seriously in high school,
+                    initially learning to manipulate computers utilizing bash files.
+                </p>
+                <br/>
+                <br/>
+                <div style={{}}>
+                    <div 
+                        style={{
+                            flex:1,
+                            textAlign:'justify',
+                            alignSelf: 'center',
+                            flexDirection: 'column'
+                        }}
+                    >
+                        <h3> In my free time...</h3>
+                        <br/>
+                        <p>
+                            Beyond software engineer career, I have some hobbies and
+
+                        </p>
+                    </div>
+                    <div style={styles.verticalImage}>
+                        <img src={me} style={styles.image}/>
+                    </div>
+
+                </div>
             </div>
 
         </div>
 
     )
-}
+};
 const styles: StyleSheetCSS = {
     contentHeader: {
         marginBottom: 16,
