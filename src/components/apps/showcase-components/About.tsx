@@ -54,9 +54,19 @@ const About: React.FC<AboutProps> = (props) => {
                     </div>
                     <div style={styles.verticalImage}>
                         <img src={me} style={styles.image}/>
+                        <p>
+                            <sub>
+                                <b>Figure 1:</b> Hey that's me!
+                            </sub>
+                        </p>
                     </div>
-
                 </div>
+                <br/>
+                <br/>
+                <p>
+                    Thanks you for reading the about me! I would love to hear your
+                    comments. You can reach me through the
+                </p>
             </div>
 
         </div>
