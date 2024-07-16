@@ -67,12 +67,20 @@ const About: React.FC<AboutProps> = (props) => {
                     Thanks you for reading the about me! I would love to hear your
                     comments. You can reach me through the
                 </p>
+                <br/>
+                <p>
+                    If you have any questions or comments I would lo
+                </p>
             </div>
-
         </div>
 
     )
 };
+
+interface StyleSheetCSS {
+    [key: string]: React.CSSProperties;
+}
+
 const styles: StyleSheetCSS = {
     contentHeader: {
         marginBottom: 16,

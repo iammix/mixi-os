@@ -21,6 +21,11 @@ const CvDownload: React.FC<CvDownloadProps> = ({ altText }) => {
     )
 };
 
+interface StyleSheetCSS {
+    [key: string]: React.CSSProperties;
+}
+
+
 const styles: StyleSheetCSS = {
     cvContainer: {
         backgroundColor: 'white',

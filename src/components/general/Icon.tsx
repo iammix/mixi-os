@@ -32,3 +32,5 @@ const styles: StyleSheetCSS = {
         pointerEvents: 'none'
     }
 }
+
+export default Icon;

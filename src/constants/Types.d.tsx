@@ -1,3 +1,6 @@
+import React from "react";
+import {IconName} from "../assets/icons";
+
 declare interface StyleSheetCSS {
     [key: string]: React.CSSProperties;
 }

@@ -140,7 +140,12 @@ const Contact: React.FC<ContactProps> = (props) => {
                     />
                     <div>
                         {/*TODO: add functionality to the submit button */}
-                        <button>
+                        <button
+                            className='site-button'
+                            style={styles.button}
+                            type='submit'
+                            disabled={!isFormValid || isLoading}
+                        >
                             {!isLoading ? (
                                 'Send Message'
                             ) : (
@@ -174,6 +179,10 @@ const Contact: React.FC<ContactProps> = (props) => {
         </div>
     );
 
+}
+
+interface StyleSheetCSS {
+    [key: string]: React.CSSProperties;
 }
 
 const styles: StyleSheetCSS = {
