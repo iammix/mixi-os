@@ -24,16 +24,13 @@ const Home: React.FC<HomeProps> = (props) => {
             {/*        to="experience"*/}
             {/*        text="EXPERIENCE"*/}
             {/*    />*/}
-            {/*    <Link*/}
-            {/*        containerStyle={styles.link}*/}
-            {/*        to="projects"*/}
-            {/*        text="PROJECTS"*/}
-            {/*    />*/}
-            {/*    <Link*/}
-            {/*        containerStyle={styles.link}*/}
-            {/*        to="contact"*/}
-            {/*        text="CONTACT"*/}
-            {/*    />*/}
+            <Link
+                containerStyle={styles.link}
+                to="projects"
+                text="PROJECTS"/>
+            <Link
+                containerStyle={styles.link} to="contact"
+                text="CONTACT"/>
             {/*</div>*/}
             {/*<div style={styles.forHireContainer} onMouseDown={goToContact}>*/}
             {/*     <img src={forhire} alt="" /> */}
