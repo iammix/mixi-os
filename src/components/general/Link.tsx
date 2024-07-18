@@ -35,7 +35,7 @@ const Link: React.FC<LinkProps> =(props) => {
                 if (isMounted) navigate(`/${props.to}`);
             }, 100);
         }
-        let t = setTimeout(() => {
+        const t = setTimeout(() => {
             if (isMounted) setActive(false);
         }, 100);
 
@@ -65,6 +65,10 @@ const Link: React.FC<LinkProps> =(props) => {
         </RouterLink>
     )
 
+}
+
+interface StyleSheetCSS {
+    [key: string]: React.CSSProperties;
 }
 
 
