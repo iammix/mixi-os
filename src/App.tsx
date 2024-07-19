@@ -3,10 +3,10 @@ import Desktop from './components/os/Desktop';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
-import Contact from "./components/apps/showcase-components/Contact.tsx";
-import About from "./components/apps/showcase-components/About.tsx";
-import Showcase from "./components/apps/Showcase.tsx";
-import Home from "./components/apps/showcase-components/Home.tsx";
+import Contact from "./components/apps/showcase-components/Contact";
+import About from "./components/apps/showcase-components/About";
+import Showcase from "./components/apps/Showcase";
+import Home from "./components/apps/showcase-components/Home";
 
 function App() {
 
@@ -16,10 +16,8 @@ function App() {
                 <Routes>
                     <Route path='/' element={<Home/>}/>
                     <Route path='/about' element={<About/>}/>
-                    {/*<Route path='/projects' element={<Projects/>}/>*/}
                     <Route path='/contact' element={<Contact/>}/>
                 </Routes>
-
             </div>
         </Router>
     )

@@ -1,5 +1,5 @@
 import React from 'react';
-import  Link from '../../general/Link.tsx';
+import  Link from '../../general/Link';
 import { useNavigate } from "react-router";
 
 export interface HomeProps {}
@@ -24,13 +24,6 @@ const Home: React.FC<HomeProps> = (props) => {
             {/*        to="experience"*/}
             {/*        text="EXPERIENCE"*/}
             {/*    />*/}
-            <Link
-                containerStyle={styles.link}
-                to="projects"
-                text="PROJECTS"/>
-            <Link
-                containerStyle={styles.link} to="contact"
-                text="CONTACT"/>
             {/*</div>*/}
             {/*<div style={styles.forHireContainer} onMouseDown={goToContact}>*/}
             {/*     <img src={forhire} alt="" /> */}
