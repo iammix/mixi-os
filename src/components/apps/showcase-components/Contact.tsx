@@ -4,6 +4,7 @@ import xIcon from '../../../assets/pictures/xIcon.png';
 import githubIcon from '../../../assets/pictures/github.png';
 import linkedInIcon from '../../../assets/pictures/linkedin.png';
 import CvDownload from "./CvDownload.tsx";
+import BackArrow from '../../general/BackArrow.tsx';
 
 interface ContactProps {}
 
@@ -67,6 +68,11 @@ const Contact: React.FC<ContactProps> = (props) => {
 
     return (
         <div className='site-page-content'>
+            <BackArrow/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
             <div style={styles.header}>
                 <h1>Contact</h1>
                 <div style={styles.socials}>

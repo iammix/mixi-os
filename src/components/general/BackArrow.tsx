@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import arrowIcon from '../../assets/pictures/arrowIcon.png'
-import { useAnimate } from 'framer-motion';
+import arrowIcon from '../../assets/pictures/arrowIcon.png';
 
 
 const BackArrow: React.FC = ()=> {
@@ -18,7 +17,7 @@ const styles: {[key:string]: React.CSSProperties} = {
     arrowContainer: {
         position: 'absolute',
         top: 16,
-        right: 16,
+        left: 300,
         cursor: 'pointer',
     },
     arrow: {

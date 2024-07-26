@@ -15,19 +15,9 @@ const Home: React.FC<HomeProps> = (props) => {
             <div style={styles.buttons}>
                 <Link containerStyle={styles.link} to='about' text='ABOUT' />
                 <Link containerStyle={styles.link} to='contact' text='CONTACT'/>
-
+                <Link containerStyle={styles.link} to='projects' text='PROJECTS'/>
+                <Link containerStyle={styles.link} to='blogposts' text='BLOGPOST'/>
             </div>
-            {/*<div style={styles.buttons}>*/}
-            {/*    <Link containerStyle={styles.link} to="about" text="ABOUT" />*/}
-            {/*    <Link*/}
-            {/*        containerStyle={styles.link}*/}
-            {/*        to="experience"*/}
-            {/*        text="EXPERIENCE"*/}
-            {/*    />*/}
-            {/*</div>*/}
-            {/*<div style={styles.forHireContainer} onMouseDown={goToContact}>*/}
-            {/*     <img src={forhire} alt="" /> */}
-            {/*</div>*/}
         </div>
     );
 };
