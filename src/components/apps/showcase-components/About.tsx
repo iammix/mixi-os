@@ -72,7 +72,7 @@ const About: React.FC<AboutProps> = (props) => {
                 </p>
                 <br/>
                 <p>
-                    If you have any questions or comments I would lo
+                    If you have any questions or comments I would
                 </p>
             </div>
         </div>

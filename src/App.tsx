@@ -10,7 +10,6 @@ import Home from "./components/apps/showcase-components/Home";
 import PostGrid from './components/apps/showcase-components/PostGrid';
 
 function App() {
-
     return (
         <Router>
             <div className='site-page'>
