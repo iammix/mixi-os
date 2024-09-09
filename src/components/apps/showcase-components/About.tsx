@@ -17,7 +17,7 @@ const About: React.FC<AboutProps> = (props) => {
                 </p>
                 <br />
                 <p>
-                    I appreciate you taking the time to explore my portfolio. It was a joy to create, and I hope you find it both engaging and informative. If you have any questions or feedback, please don't hesitate to reach out via the <Link to="/contact">contact form</Link> or email me at <a href="mailto:[your-email]">[your-email]</a>.
+                    I appreciate you taking the time to explore my portfolio. It was a joy to create, and I hope you find it both engaging and informative. If you have any questions or feedback, please don't hesitate to reach out via the <Link to="/contact">contact form</Link> or email me at <a href="mailto:k.mixios@gmail.com">k.mixios@gmail.com</a>.
                 </p>
             </div>
             <CvDownload />
@@ -88,6 +88,8 @@ const styles: StyleSheetCSS = {
     image: {
         height: 'auto',
         width: '100%',
+        borderRadius: '50px',
+        overflow: 'hidden'
     },
     topImage: {
         height: 'auto',

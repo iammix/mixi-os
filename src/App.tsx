@@ -10,6 +10,8 @@ import Home from "./components/apps/showcase-components/Home";
 import PostGrid from './components/apps/showcase-components/PostGrid';
 import NavBar from './components/apps/showcase-components/NavBar';
 import Projects from './components/apps/showcase-components/Projects';
+import ProjectBox from './components/apps/showcase-components/Projects';
+import MusicProjects from './components/apps/showcase-components/projects/Music';
 
 function App() {
     return (
@@ -20,6 +22,8 @@ function App() {
                     <Route path='/about' element={<About/>}/>
                     <Route path='/contact' element={<Contact/>}/>
                     <Route path='/projects' element={<Projects/>}/>
+                    <Route path="/projects/:route" element={<ProjectBox/>} />
+                    <Route path='/projects/music' element={<MusicProjects/>}/>
                     <Route path='/blogposts' element={<PostGrid/>}/>
                 </Routes>
             </div>

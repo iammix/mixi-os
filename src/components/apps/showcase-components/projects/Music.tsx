@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
 // @ts-ignore
-import house from '../../../assets/audio/house_master.mp3';
-// @ts-ignore
-import edge from '../../../assets/audio/edge_unmastered.mp3';
-// @ts-ignore
-import dnb from '../../../assets/audio/break.mp3';
-// @ts-ignore
-import dnbDrums from '../../../assets/audio/dnb_drop_drums.mp3';
-import houseProject from '../../../assets/pictures/projects/audio/houseProject.png';
-import dnbDrumsProject from '../../../assets/pictures/projects/audio/dnbDrumsProject.png';
-import { MusicPlayer } from '../../general';
+import ItsMixvirus from '../../../../assets/audio/ItsMixvirus.wav';
+import cd from '../../../../assets/icons/cd.png'
+import MusicPlayer from '../../../general/MusicPlayer';
 
 export interface MusicProjectsProps {}
 
@@ -18,16 +11,14 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
 
     return (
         <div className="site-page-content">
-            <h1>Music & Sound</h1>
-            <h3>Ventures</h3>
+            <h1>Beats & Sound</h1>
+            <h3>MixVirus Beats</h3>
             <br />
             <div className="text-block">
                 <p>
                     Music has been a passion of mine for my whole life. When I
-                    was 15 years old, I downloaded FL Studio and started to
-                    produce my own music. I found a wonderful community on
-                    reddit called r/edmproduction and in 2016 created the now
-                    popular discord server EDM Production with over 14k members.
+                    was in high school, I downloaded FL Studio and started to
+                    produce my own hip-hop beats.
                 </p>
                 <br />
                 <p>
@@ -62,7 +53,7 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
             <br />
 
             <MusicPlayer
-                src={house}
+                src={ItsMixvirus}
                 title="Timeless"
                 subtitle="Henry Heffernan - 2022"
                 currentSong={currentSong}
@@ -71,15 +62,6 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
 
             <br />
             <br />
-            <div className="captioned-image">
-                <img src={houseProject} alt="" />
-                <p>
-                    <sub>
-                        <b>Figure 1:</b> A screenshot of the project file of
-                        Timeless. 64 tracks in total.
-                    </sub>
-                </p>
-            </div>
             <p>
                 I love so much about this track. I'm particularly very proud of
                 the composition and the trichotomy of the happy upbeat energy in
@@ -110,7 +92,7 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
             </p>
             <br />
             <MusicPlayer
-                src={edge}
+                src={ItsMixvirus}
                 title="Edge [W.I.P.]"
                 subtitle="Henry Heffernan - 2021"
                 currentSong={currentSong}
@@ -148,7 +130,7 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
             </p>
             <br />
             <MusicPlayer
-                src={dnb}
+                src={ItsMixvirus}
                 title="Break [Demo]"
                 subtitle="Henry Heffernan - 2019/2022"
                 currentSong={currentSong}
@@ -166,7 +148,7 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
             </p>
             <br />
             <MusicPlayer
-                src={dnbDrums}
+                src={ItsMixvirus}
                 title="Break [Drums and Sub]"
                 subtitle="Henry Heffernan - 2019/2022"
                 currentSong={currentSong}
@@ -174,7 +156,7 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
             />
             <br />
             <div className="captioned-image">
-                <img src={dnbDrumsProject} alt="" />
+                <img src={cd} alt="" />
                 <p>
                     <sub>
                         <b>Figure 2:</b> Drums and sub for the track Break. See
@@ -218,7 +200,5 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
         </div>
     );
 };
-
-// const styles: StyleSheetCSS = {};
 
 export default MusicProjects;
