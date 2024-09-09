@@ -155,17 +155,6 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
                 setCurrentSong={setCurrentSong}
             />
             <br />
-            <div className="captioned-image">
-                <img src={cd} alt="" />
-                <p>
-                    <sub>
-                        <b>Figure 2:</b> Drums and sub for the track Break. See
-                        if you can follow along in the image as the audio above
-                        plays!
-                    </sub>
-                </p>
-            </div>
-            <br />
             <p>
                 There are a lot of layers to DnB drums, and I honestly find them
                 the hardest to mix and get right since the sound design of DnB
@@ -177,7 +166,7 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
                 saver to keep the drums controlled but still hard hitting.
             </p>
             <br />
-            <h2>The Future of my music</h2>
+            <h2>Next chapter for MixVirus beats...</h2>
             <br />
             <p>
                 I love to make music and will continue to make music as long as

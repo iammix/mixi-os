@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import colors from '../../../constants/colors';
+import React, { useEffect, useState } from 'react';
+//import colors from '../../../constants/colors';
 import xIcon from '../../../assets/pictures/xIcon.png';
 import githubIcon from '../../../assets/pictures/github.png';
 import linkedInIcon from '../../../assets/pictures/linkedin.png';
@@ -29,15 +29,14 @@ const SocialBox: React.FC<SocialBoxProps> = (props) => {
     );
 };
 
-const Contact: React.FC<ContactProps> = (props) => {
-    const[company, setCompany] = useState('');
+const Contact: React.FC<ContactProps> = () => {
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [message, setMessage] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, ] = useState(false);
     const [formMessage, setFormMessage] = useState(false);
-    const [formMessageColor, setFormMessageColor] = useState('');
+    const [, setFormMessageColor] = useState('');
 
     useEffect(()=>{
         if (validateEmail(email) && name.length > 0 && message.length > 0) {

@@ -2,10 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import CvDownload from './CvDownload';
 import me from '../../../assets/pictures/curme.jpg'
-import BackArrow from '../../general/BackArrow';
 export interface AboutProps { }
 
-const About: React.FC<AboutProps> = (props) => {
+const About: React.FC<AboutProps> = () => {
     return (
         <div className="site-page-content">
             <h1 style={{ marginLeft: -16 }}>Hello!</h1>
