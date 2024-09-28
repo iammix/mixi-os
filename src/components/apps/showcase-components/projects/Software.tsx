@@ -10,7 +10,7 @@ import VideoAsset from '../../general/VideoAsset';
 
 export interface SoftwareProjectsProps {}
 
-const SoftwareProjects: React.FC<SoftwareProjectsProps> = (props) => {
+const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
     return (
         <div className="site-page-content">
             <h1>Software</h1>

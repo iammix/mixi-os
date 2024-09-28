@@ -3,13 +3,13 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import About from "./showcase-components/About.tsx";
 import Contact from "./showcase-components/Contact.tsx";
 import Home from "./showcase-components/Home.tsx";
-import useInitialWindowSize from "../../hooks/useInitialWindowSize.tsx";
+//import useInitialWindowSize from "../../hooks/useInitialWindowSize.tsx";
 import Projects from './showcase-components/Projects.tsx';
 
 interface ShowcaseProps {}
 
-const Showcase: React.FC<ShowcaseProps>=(props) => {
-    const {initWidth, initHeight } = useInitialWindowSize({ margin: 100});
+const Showcase: React.FC<ShowcaseProps>=() => {
+//    const {initWidth, initHeight } = useInitialWindowSize({ margin: 100});
 
     return (
         <Router>

@@ -1,14 +1,14 @@
 import './App.css';
-import Desktop from './components/os/Desktop';
+//import Desktop from './components/os/Desktop';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import Contact from "./components/apps/showcase-components/Contact";
 import About from "./components/apps/showcase-components/About";
-import Showcase from "./components/apps/Showcase";
+//import Showcase from "./components/apps/Showcase";
 import Home from "./components/apps/showcase-components/Home";
 import PostGrid from './components/apps/showcase-components/PostGrid';
-import NavBar from './components/apps/showcase-components/NavBar';
+//import NavBar from './components/apps/showcase-components/NavBar';
 import Projects from './components/apps/showcase-components/Projects';
 import ProjectBox from './components/apps/showcase-components/Projects';
 import MusicProjects from './components/apps/showcase-components/projects/Music';

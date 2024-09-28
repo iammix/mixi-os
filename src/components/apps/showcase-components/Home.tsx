@@ -1,10 +1,10 @@
 import React from 'react';
 import  Link from '../../general/Link';
-import { useNavigate } from "react-router";
+//import { useNavigate } from "react-router";
 
 export interface HomeProps {}
 
-const Home: React.FC<HomeProps> = (props) => {
+const Home: React.FC<HomeProps> = () => {
 
     return (
         <div style={styles.page}>

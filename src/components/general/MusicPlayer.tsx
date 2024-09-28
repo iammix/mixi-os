@@ -188,6 +188,12 @@ const vars: Variants = {
     },
 };
 
+
+interface StyleSheetCSS {
+    [key: string]: React.CSSProperties;
+}
+
+
 const styles: StyleSheetCSS = {
     musicPlayerContainer: {
         flexDirection: 'row',

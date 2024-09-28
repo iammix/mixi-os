@@ -23,6 +23,10 @@ const Icon: React.FC<IconProps> = ({ icon, style, size }) => {
     );
 };
 
+interface StyleSheetCSS {
+    [key: string]: React.CSSProperties;
+}
+
 const styles: StyleSheetCSS = {
     icon: {
         imageRendering: 'pixelated',

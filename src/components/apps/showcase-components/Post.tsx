@@ -1,5 +1,5 @@
 // src/components/Post.js
-import React from 'react';
+//import React from 'react';
 
 const Post = ({ title, content }) => {
   return (
