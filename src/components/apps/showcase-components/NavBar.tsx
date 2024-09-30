@@ -4,11 +4,10 @@ import { useLocation, useNavigate } from 'react-router';
 
 
 interface NavbarProps {}
-const NavBar: React.FC<NavbarProps> = (props) => {
+const NavBar: React.FC<NavbarProps> = () => {
     const location = useLocation();
-    const [projectsExpanded, setProjectsExpanded] = useState(false);
+    const [_, setProjectsExpanded] = useState(false);
     const [isHome, setIsHome] = useState(false);
-    const navigate = useNavigate();
 
     useEffect(()=> {
         if (location.pathname.includes('/projects')) {
