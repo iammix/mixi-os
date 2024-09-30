@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import ProjectBox from "./ProjectBox";
 import music from "../../../assets/pictures/projects/music.gif";
 import software from "../../../assets/pictures/projects/software.gif"
+import BackArrow from "../../general/BackArrow.tsx";
 
 const Projects: React.FC = () => {
     const navigate = useNavigate(); // Get navigate from the router context
 
     return (
         <div className="site-page-content">
+            <BackArrow/>
             <h1>Projects</h1>
             <h3>& Hobbies</h3>
             <br />

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import ItsMixvirus from '../../../../assets/audio/ItsMixvirus.wav';
 import cd from '../../../../assets/icons/cd.png'
 import MusicPlayer from '../../../general/MusicPlayer';
+import BackArrow from "../../../general/BackArrow.tsx";
 
 export interface MusicProjectsProps {}
 
@@ -11,6 +12,7 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
 
     return (
         <div className="site-page-content">
+            <BackArrow/>
             <h1>Beats & Sound</h1>
             <h3>MixVirus Beats</h3>
             <br />

@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Colors from '../../constants/colors';
 import ShowCase from '../apps/Showcase';
 import ShutdownSequence from './ShutdownSequence';
-// import ThisComputer from '../applications/ThisComputer';
 import Toolbar from './Toolbar';
 import DesktopShortcut, { DesktopShortcutProps } from './DesktopShortcut';
 import { IconName } from '../../assets/icons';
 import TerminalApp from '../apps/TerminalApp';
-
+import BookMeeting from "../apps/BookMeeting.tsx";
+import backgroundImage from "../../assets/pictures/backgroundImage.png";
 export interface DesktopProps {}
 
 type ExtendedWindowAppProps<T> = T & WindowAppProps;
@@ -29,7 +29,7 @@ const APPLICATIONS: {
     showcase: {
         key: 'showcase',
         name: 'About Me',
-        shortcutIcon: 'showcaseIcon',
+        shortcutIcon: 'showcaseIcon2',
         component: ShowCase,
     },
     terminal: {
@@ -37,7 +37,13 @@ const APPLICATIONS: {
         name: 'Terminal',
         shortcutIcon: 'computerBig',
         component: TerminalApp,
-    }
+    },
+    bookmeeting: {
+        key: 'bookmeeting',
+        name: 'Book Meeting',
+        shortcutIcon: 'credits',
+        component: BookMeeting,
+    },
 };
 
 const Desktop: React.FC<DesktopProps> = (props) => {
@@ -236,7 +242,11 @@ const styles: StyleSheetCSS = {
     desktop: {
         minHeight: '100%',
         flex: 1,
-        backgroundColor: Colors.turquoise,
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        //backgroundColor: Colors.turquoise,
     },
     shutdown: {
         minHeight: '100%',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import About from "./showcase-components/About.tsx";
 import Contact from "./showcase-components/Contact.tsx";
 import Home from "./showcase-components/Home.tsx";
@@ -9,11 +9,13 @@ import ProjectBox from './showcase-components/ProjectBox.tsx';
 import PostGrid from './showcase-components/PostGrid.tsx';
 import MusicProjects from './showcase-components/projects/Music.tsx';
 import Window from '../os/Window.tsx';
+import NavBar from "./showcase-components/NavBar.tsx";
 
-export interface ShowcaseProps extends WindowAppProps { }
+export interface ShowcaseProps extends WindowAppProps {
+}
 
 const Showcase: React.FC<ShowcaseProps> = (props) => {
-    const { initWidth, initHeight } = useInitialWindowSize({ margin: 100 });
+    const {initWidth, initHeight} = useInitialWindowSize({margin: 100});
 
     return (
         <Window
@@ -29,13 +31,13 @@ const Showcase: React.FC<ShowcaseProps> = (props) => {
             bottomLeftText={''}>
             <div className='site-page'>
                 <Routes>
-                    <Route path='/' element={<Home />} />
-                    <Route path='/about' element={<About />} />
-                    <Route path='/contact' element={<Contact />} />
-                    <Route path='/projects' element={<Projects />} />
-                    <Route path="/projects/:route" element={<ProjectBox />} />
-                    <Route path='/projects/music' element={<MusicProjects />} />
-                    <Route path='/blogposts' element={<PostGrid />} />
+                    <Route path='/' element={<Home/>}/>
+                    <Route path='/about' element={<About/>}/>
+                    <Route path='/contact' element={<Contact/>}/>
+                    <Route path='/projects' element={<Projects/>}/>
+                    <Route path="/projects/:route" element={<ProjectBox/>}/>
+                    <Route path='/projects/music' element={<MusicProjects/>}/>
+                    <Route path='/blogposts' element={<PostGrid/>}/>
                 </Routes>
             </div>
 

@@ -18,6 +18,7 @@ import windowExplorerIcon from './windowExplorerIcon.png';
 import windowsStartIcon from './windowsStartIcon.png';
 import scrabbleIcon from './scrabbleIcon.png';
 import close from './close.png';
+import showcase2 from './showcase2.png'
 
 const icons = {
     windowResize: windowResize,
@@ -27,6 +28,7 @@ const icons = {
     computerSmall: computerSmall,
     myComputer: myComputer,
     showcaseIcon: showcaseIcon,
+    showcaseIcon2: showcase2,
     doomIcon: doomIcon,
     volumeOn: volumeOn,
     volumeOff: volumeOff,

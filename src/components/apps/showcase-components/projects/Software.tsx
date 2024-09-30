@@ -7,12 +7,14 @@ import computer from '../../../assets/pictures/projects/software/computer.mp4';
 import scroll from '../../../assets/pictures/projects/software/scroll.mp4';
 import ResumeDownload from '../ResumeDownload';
 import VideoAsset from '../../general/VideoAsset';
+import BackArrow from "../../../general/BackArrow.tsx";
 
 export interface SoftwareProjectsProps {}
 
 const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
     return (
         <div className="site-page-content">
+            <BackArrow/>
             <h1>Software</h1>
             <h3>Projects</h3>
             <br />
