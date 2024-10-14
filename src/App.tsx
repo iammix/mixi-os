@@ -1,7 +1,7 @@
 import './App.css';
 //import Desktop from './components/os/Desktop';
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 //import Showcase from "./components/apps/Showcase";
 

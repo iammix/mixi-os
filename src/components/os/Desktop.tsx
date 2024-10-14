@@ -46,7 +46,7 @@ const APPLICATIONS: {
     },
 };
 
-const Desktop: React.FC<DesktopProps> = (props) => {
+const Desktop: React.FC<DesktopProps> = () => {
     const [windows, setWindows] = useState<DesktopWindows>({});
 
     const [shortcuts, setShortcuts] = useState<DesktopShortcutProps[]>([]);

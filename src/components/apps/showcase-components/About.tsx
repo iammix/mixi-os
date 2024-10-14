@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import CvDownload from './CvDownload';
 import me from '../../../assets/pictures/curme.jpg'
 import BackArrow from "../../general/BackArrow.tsx";
-import NavBar from "./NavBar.tsx";
 export interface AboutProps { }
 
 const About: React.FC<AboutProps> = () => {

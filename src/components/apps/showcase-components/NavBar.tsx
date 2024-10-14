@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 //import { Link } from '../../general';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation } from 'react-router';
 
 
 interface NavbarProps {}

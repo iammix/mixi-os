@@ -5,8 +5,7 @@ import saga from '../../../assets/pictures/projects/software/saga.mp4';
 import computer from '../../../assets/pictures/projects/software/computer.mp4';
 // @ts-ignore
 import scroll from '../../../assets/pictures/projects/software/scroll.mp4';
-import ResumeDownload from '../ResumeDownload';
-import VideoAsset from '../../general/VideoAsset';
+import CvDownload from '../CvDownload.tsx';
 import BackArrow from "../../../general/BackArrow.tsx";
 
 export interface SoftwareProjectsProps {}
@@ -23,7 +22,7 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
                 over the last few years.
             </p>
             <br />
-            <ResumeDownload />
+            <CvDownload />
             <br />
             <div className="text-block">
                 <h2>henryheffernan.com</h2>
@@ -41,7 +40,6 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
                 </p>
                 <br />
                 <div className="captioned-image">
-                    <VideoAsset src={computer} />
                     <p style={styles.caption}>
                         <sub>
                             <b>Figure 1:</b> Blender Scene of the 3D website.
@@ -144,7 +142,6 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
                 </p>
                 <br />
                 <div className="captioned-image">
-                    <VideoAsset src={saga} />
                     <div style={styles.caption}>
                         <p>
                             <sub>
@@ -222,7 +219,6 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
                 </p>
                 <br />
                 <div className="captioned-image">
-                    <VideoAsset src={scroll} />
                     <p style={styles.caption}>
                         <sub>
                             <b>Figure 3:</b> Skip the Scroll in action, finding
@@ -274,7 +270,7 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
                     rate it on the Chrome web store.
                 </p>
             </div>
-            <ResumeDownload />
+            <CvDownload />
         </div>
     );
 };
