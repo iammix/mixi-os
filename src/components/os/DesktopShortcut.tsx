@@ -19,7 +19,7 @@ const DesktopShortcut: React.FC<DesktopShortcutProps> = ({
     const [isSelected, setIsSelected] = useState(false);
     const [shortcutId, setShortcutId] = useState('');
     const [lastSelected, setLastSelected] = useState(false);
-    const containerRef = useRef<any>();
+    const containerRef = useRef<never>();
 
     const [scaledStyle, setScaledStyle] = useState({});
 

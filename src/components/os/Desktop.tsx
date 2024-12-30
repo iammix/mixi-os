@@ -242,11 +242,11 @@ const styles: StyleSheetCSS = {
     desktop: {
         minHeight: '100%',
         flex: 1,
-        backgroundImage: `url(${backgroundImage})`,
+        //backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        //backgroundColor: Colors.turquoise,
+        backgroundColor: Colors.turquoise,
     },
     shutdown: {
         minHeight: '100%',

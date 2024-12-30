@@ -15,7 +15,7 @@ export interface ShowcaseProps extends WindowAppProps {
 }
 
 const Showcase: React.FC<ShowcaseProps> = (props) => {
-    const {initWidth, initHeight} = useInitialWindowSize({margin: 100});
+    const {initWidth, initHeight} = useInitialWindowSize({margin: 500});
 
     return (
         <Window
