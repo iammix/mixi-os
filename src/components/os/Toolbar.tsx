@@ -23,7 +23,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         let date1 = date.getDate();
         let month = date.getMonth();
         let year = date.getFullYear();
-        console.log(date1+'/'+month+'/'+year);
+        //console.log(date1+'/'+month+'/'+year);
         let amPm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
         hours = hours ? hours : 12;

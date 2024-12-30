@@ -7,6 +7,7 @@ import DesktopShortcut, { DesktopShortcutProps } from './DesktopShortcut';
 import { IconName } from '../../assets/icons';
 import TerminalApp from '../apps/TerminalApp';
 import BookMeeting from "../apps/BookMeeting.tsx";
+// @ts-ignore
 import backgroundImage from "../../assets/pictures/backgroundImage.png";
 export interface DesktopProps {}
 

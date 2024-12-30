@@ -10,6 +10,7 @@ import PostGrid from './showcase-components/PostGrid.tsx';
 import MusicProjects from './showcase-components/projects/Music.tsx';
 import Window from '../os/Window.tsx';
 import NavBar from "./showcase-components/NavBar.tsx";
+import SoftwareProjects from "./showcase-components/projects/Software.tsx";
 
 export interface ShowcaseProps extends WindowAppProps {
 }
@@ -37,6 +38,7 @@ const Showcase: React.FC<ShowcaseProps> = (props) => {
                     <Route path='/projects' element={<Projects/>}/>
                     <Route path="/projects/:route" element={<ProjectBox/>}/>
                     <Route path='/projects/music' element={<MusicProjects/>}/>
+                    <Route path='/projects/projects' element={<SoftwareProjects/>}/>
                     <Route path='/blogposts' element={<PostGrid/>}/>
                 </Routes>
             </div>

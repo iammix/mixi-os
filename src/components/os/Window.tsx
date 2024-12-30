@@ -25,16 +25,16 @@ export interface WindowProps {
 }
 
 const Window: React.FC<WindowProps> = (props) => {
-    const windowRef = useRef<any>(null);
-    const dragRef = useRef<any>(null);
-    const contentRef = useRef<any>(null);
+    const windowRef = useRef<never>(null);
+    const dragRef = useRef<never>(null);
+    const contentRef = useRef<never>(null);
 
     const dragProps = useRef<{
-        dragStartX: any;
-        dragStartY: any;
+        dragStartX: never;
+        dragStartY: never;
     }>();
 
-    const resizeRef = useRef<any>(null);
+    const resizeRef = useRef<never>(null);
 
     const [top, setTop] = useState(props.top);
     const [left, setLeft] = useState(props.left);
@@ -60,14 +60,14 @@ const Window: React.FC<WindowProps> = (props) => {
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
 
-    const startResize = (event: any) => {
+    const startResize = (event: never) => {
         event.preventDefault();
         setIsResizing(true);
         window.addEventListener('mousemove', onResize, false);
         window.addEventListener('mouseup', stopResize, false);
     };
 
-    const onResize = ({ clientX, clientY }: any) => {
+    const onResize = ({ clientX, clientY }: never) => {
         const curWidth = clientX - left;
         const curHeight = clientY - top;
         if (curWidth > 520) resizeRef.current.style.width = `${curWidth}px`;
