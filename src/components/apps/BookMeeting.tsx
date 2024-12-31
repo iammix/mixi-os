@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom";
 import BackArrow from "../general/BackArrow.tsx";
 import ProjectBox from "./showcase-components/ProjectBox.tsx";
 import music from "../../assets/pictures/projects/music.gif";
+import calendar from "../../assets/icons/calendar.gif"
 
 export interface BookMeetingProps extends WindowAppProps {
 }
@@ -24,13 +25,13 @@ const BookMeeting: React.FC<BookMeetingProps> = (props) => {
             onInteract={props.onInteract}
             minimizeWindow={props.onMinimize}
             bottomLeftText={''}>
-            <div className="site-page">
-                <BackArrow/>
+            <div className="site-page-content">
+                <h1>meeting type</h1>
                 <h3>meeting type</h3>
                 <br/>
                 <div style={styles.projectLinksContainer}>
                     <ProjectBox
-                        icon={music}
+                        icon={calendar}
                         iconStyle={styles.computerIcon}
                         title="30 minutes meeting"
                         subtitle=" "
@@ -38,7 +39,7 @@ const BookMeeting: React.FC<BookMeetingProps> = (props) => {
                         navigate={navigate}
                     />
                     <ProjectBox
-                        icon={music}
+                        icon={calendar}
                         iconStyle={styles.computerIcon}
                         title="60 minutes meeting"
                         subtitle=""
