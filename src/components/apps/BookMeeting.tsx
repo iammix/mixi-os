@@ -1,11 +1,14 @@
 import React from 'react';
 import useInitialWindowSize from "../../hooks/useInitialWindowSize.tsx";
 import Window from '../os/Window.tsx';
-import {useNavigate} from "react-router-dom";
 import BackArrow from "../general/BackArrow.tsx";
 import ProjectBox from "./showcase-components/ProjectBox.tsx";
 import music from "../../assets/pictures/projects/music.gif";
 import calendar from "../../assets/icons/calendar.gif"
+import calendarpx from "../../assets/icons/calendar-px.gif"
+import MeetingBox from './showcase-components/MeetingBox.tsx';
+import { Routes, Route, useNavigate } from "react-router-dom";
+import HalfMeeting from './showcase-components/meetings/HalfMeet.tsx';
 
 export interface BookMeetingProps extends WindowAppProps {
 }
@@ -19,7 +22,7 @@ const BookMeeting: React.FC<BookMeetingProps> = (props) => {
             left={56}
             width={initWidth}
             height={initHeight}
-            windowTitle="Konstantinos Mixios - About me"
+            windowTitle="Book meeting"
             windowBarIcon="windowExplorerIcon"
             closeWindow={props.onClose}
             onInteract={props.onInteract}
@@ -27,27 +30,28 @@ const BookMeeting: React.FC<BookMeetingProps> = (props) => {
             bottomLeftText={''}>
             <div className="site-page-content">
                 <h1>meeting type</h1>
-                <h3>meeting type</h3>
+                <h3>choose meeting time</h3>
                 <br/>
                 <div style={styles.projectLinksContainer}>
-                    <ProjectBox
-                        icon={calendar}
+                    <MeetingBox
+                        icon={calendarpx}
                         iconStyle={styles.computerIcon}
                         title="30 minutes meeting"
-                        subtitle=" "
                         route='meeting30'
                         navigate={navigate}
                     />
-                    <ProjectBox
-                        icon={calendar}
+                    <MeetingBox
+                        icon={calendarpx}
                         iconStyle={styles.computerIcon}
                         title="60 minutes meeting"
-                        subtitle=""
                         route="meeting60"
                         navigate={navigate}
                     />
                 </div>
-
+                <Routes>
+                    <Route path="/meetings/meeting30" element={<HalfMeeting />} />
+                    <Route path="/meetings/meeting60" element={<HalfMeeting />} />
+                </Routes>
             </div>
         </Window>
     );

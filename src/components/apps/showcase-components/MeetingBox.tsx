@@ -1,45 +1,40 @@
 import React from 'react';
 
-interface ProjectBoxProps {
+interface MeetingBoxProps {
     icon: string;
     title: string;
-    subtitle: string;
     route: string;
     iconStyle: React.CSSProperties;
-    navigate: (path: string) => void; // Pass navigation function as prop
+    navigate: (path: string) => void;
 }
 
-const ProjectBox: React.FC<ProjectBoxProps> = ({
+const MeetingBox: React.FC<MeetingBoxProps> = ({
     icon,
     title,
-    subtitle,
     route,
     iconStyle,
-    navigate, // Receive navigate prop
+    navigate
 }) => {
     const handleClick = () => {
-        navigate(`/projects/${route}`);
+        navigate(`/meetings/${route}`);
     };
-
     return (
         <div
             onMouseDown={handleClick}
             className="big-button-container"
-            style={styles.projectLink}
+            style={styles.meetingLink}
         >
-            <div style={styles.projectLinkLeft}>
-                <img src={icon} style={{ ...styles.projectLinkImage, ...iconStyle }} alt="" />
-                <div style={styles.projectText}>
+            <div style={styles.meetingLinkLeft}>
+                <img src={icon} style={{ ...styles.meetingLinkImage, ...iconStyle }} alt=""/>
+                <div style={styles.meetingText}>
                     <h1 style={{ fontSize: 48 }}>{title}</h1>
-                    <h3>{subtitle}</h3>
                 </div>
             </div>
-            <div style={styles.projectLinkRight}></div>
+            <div style={styles.meetingLinkRight}></div>
         </div>
     );
 };
-
-export default ProjectBox;
+export default MeetingBox;
 
 interface StyleSheetCSS {
     [key: string]: React.CSSProperties;
@@ -48,13 +43,13 @@ interface StyleSheetCSS {
 
 
 const styles: StyleSheetCSS = {
-    projectLinksContainer: {
+    meetingLinksContainer: {
         flexDirection: 'column',
         width: '100%',
         display: 'flex',
         flex: 1,
     },
-    projectLink: {
+    meetingLink: {
         marginBottom: 24,
         cursor: 'pointer',
         width: '100%',
@@ -63,16 +58,16 @@ const styles: StyleSheetCSS = {
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    projectText: {
+    meetingText: {
         justifyContent: 'center',
         flexDirection: 'column',
     },
-    projectLinkImage: {
+    meetingLinkImage: {
         width: 48,
         // height: 48,
         marginRight: 38,
     },
-    projectLinkLeft: {
+    meetingLinkLeft: {
         marginLeft: 16,
         alignItems: 'center',
     },

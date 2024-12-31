@@ -7,7 +7,7 @@ import BackArrow from "../../../general/BackArrow.tsx";
 
 export interface MusicProjectsProps {}
 
-const MusicProjects: React.FC<MusicProjectsProps> = () => {
+const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
     const [currentSong, setCurrentSong] = useState<string>('');
 
     return (
