@@ -9,35 +9,46 @@ import music from "../../assets/pictures/projects/music.gif";
 export interface BookMeetingProps extends WindowAppProps {
 }
 
-const BookMeeting: React.FC<BookMeetingProps> = () => {
+const BookMeeting: React.FC<BookMeetingProps> = (props) => {
     const navigate = useNavigate();
-    // const { initWidth, initHeight } = useInitialWindowSize({ margin: 100 });
+    const { initWidth, initHeight } = useInitialWindowSize({ margin: 100 });
     return (
-        <div className="site-page-content">
-            <BackArrow/>
-            <h3>meeting type</h3>
-            <br/>
-            <div style={styles.projectLinksContainer}>
-                <ProjectBox
-                    icon={music}
-                    iconStyle={styles.computerIcon}
-                    title="30 minutes meeting"
-                    subtitle=""
-                    route=''
-                    navigate={navigate}
-                />
-                <ProjectBox
-                    icon={music}
-                    iconStyle={styles.computerIcon}
-                    title="60 minutes meeting"
-                    subtitle=""
-                    route=""
-                    navigate={navigate}
-                />
+        <Window
+            top={24}
+            left={56}
+            width={initWidth}
+            height={initHeight}
+            windowTitle="Konstantinos Mixios - About me"
+            windowBarIcon="windowExplorerIcon"
+            closeWindow={props.onClose}
+            onInteract={props.onInteract}
+            minimizeWindow={props.onMinimize}
+            bottomLeftText={''}>
+            <div className="site-page">
+                <BackArrow/>
+                <h3>meeting type</h3>
+                <br/>
+                <div style={styles.projectLinksContainer}>
+                    <ProjectBox
+                        icon={music}
+                        iconStyle={styles.computerIcon}
+                        title="30 minutes meeting"
+                        subtitle=" "
+                        route='meeting30'
+                        navigate={navigate}
+                    />
+                    <ProjectBox
+                        icon={music}
+                        iconStyle={styles.computerIcon}
+                        title="60 minutes meeting"
+                        subtitle=""
+                        route="meeting60"
+                        navigate={navigate}
+                    />
+                </div>
+
             </div>
-
-        </div>
-
+        </Window>
     );
 };
 

@@ -7,8 +7,8 @@ import DesktopShortcut, { DesktopShortcutProps } from './DesktopShortcut';
 import { IconName } from '../../assets/icons';
 import TerminalApp from '../apps/TerminalApp';
 import BookMeeting from "../apps/BookMeeting.tsx";
-// @ts-ignore
-import backgroundImage from "../../assets/pictures/backgroundImage.png";
+//import backgroundImage from "../../assets/pictures/backgroundImage.png";
+
 export interface DesktopProps {}
 
 type ExtendedWindowAppProps<T> = T & WindowAppProps;
@@ -18,7 +18,7 @@ const APPLICATIONS: {
         key: string;
         name: string;
         shortcutIcon: IconName;
-        component: React.FC<ExtendedWindowAppProps<any>>;
+        component: React.FC<ExtendedWindowAppProps<never>>;
     };
 } = {
     // computer: {

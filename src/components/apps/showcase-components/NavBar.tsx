@@ -28,7 +28,7 @@ const NavBar: React.FC<NavbarProps> = () => {
             <div>
                 <h1>Konstantinos</h1>
                 <h1>Mixios</h1>
-                <h3>Portfolio '24</h3>
+                <h3>Portfolio '25</h3>
             </div>
         </div>
     ) : (<></>);
