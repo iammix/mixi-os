@@ -7,6 +7,7 @@ import DesktopShortcut, { DesktopShortcutProps } from './DesktopShortcut';
 import { IconName } from '../../assets/icons';
 import TerminalApp from '../apps/TerminalApp';
 import BookMeeting from "../apps/BookMeeting.tsx";
+import Minute from "../apps/meeting-components/meetings/ShortMeeting.tsx";
 //import backgroundImage from "../../assets/pictures/backgroundImage.png";
 
 export interface DesktopProps {}
@@ -21,12 +22,7 @@ const APPLICATIONS: {
         component: React.FC<ExtendedWindowAppProps<never>>;
     };
 } = {
-    // computer: {
-    //     key: 'computer',
-    //     name: 'This Computer',
-    //     shortcutIcon: 'computerBig',
-    //     component: ThisComputer,
-    // },
+
     showcase: {
         key: 'showcase',
         name: 'About Me',

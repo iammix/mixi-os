@@ -16,7 +16,7 @@ const MeetingBox: React.FC<MeetingBoxProps> = ({
     navigate
 }) => {
     const handleClick = () => {
-        navigate(`/meetings/${route}`);
+        navigate(`/meeting/${route}`);
     };
     return (
         <div

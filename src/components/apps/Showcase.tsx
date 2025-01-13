@@ -8,13 +8,12 @@ import Projects from './showcase-components/Projects.tsx';
 import ProjectBox from './showcase-components/ProjectBox.tsx';
 import PostGrid from './showcase-components/PostGrid.tsx';
 import MusicProjects from './showcase-components/projects/Music.tsx';
-import Window from '../os/Window.tsx';
+import Window, {WindowProps} from '../os/Window.tsx';
 import NavBar from "./showcase-components/NavBar.tsx";
 import SoftwareProjects from "./showcase-components/projects/Software.tsx";
-import HalfMeeting from './showcase-components/meetings/HalfMeet.tsx';
-import MeetingBox from './showcase-components/MeetingBox.tsx';
+import MeetingMinute from "./meeting-components/meetings/ShortMeeting.tsx";
 
-export interface ShowcaseProps extends WindowAppProps {
+export interface ShowcaseProps extends WindowProps {
 }
 
 const Showcase: React.FC<ShowcaseProps> = (props) => {
