@@ -35,7 +35,7 @@ const Contact: React.FC<ContactProps> = () => {
     const [message, setMessage] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
     const [isLoading, ] = useState(false);
-    const [formMessage, setFormMessage] = useState(false);
+    const [formMessage, setFormMessage] = useState('');
     const [, setFormMessageColor] = useState('');
 
     useEffect(()=>{
@@ -46,18 +46,9 @@ const Contact: React.FC<ContactProps> = () => {
         }
     }, [email, name, message]);
 
-    async function submitForm() {
-        if (!isFormValid) {
-            setFormMessage('Form is not VALID, please try again!')
-            setFormMessageColor('red');
-            return;
-        }
-        // TODO: implement API Calls
-
-    }
 
     useEffect(()=>{
-        if (formMessage.lenght > 0) {
+        if (formMessage.length > 0) {
             setTimeout(()=> {
                 setFormMessage('');
                 setFormMessageColor('');
