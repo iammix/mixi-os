@@ -6,7 +6,7 @@ import Home from "./showcase-components/Home.tsx";
 import useInitialWindowSize from "../../hooks/useInitialWindowSize.tsx";
 import Projects from './showcase-components/Projects.tsx';
 import ProjectBox from './showcase-components/ProjectBox.tsx';
-import PostGrid from './showcase-components/PostGrid.tsx';
+//import PostGrid from './showcase-components/PostGrid.tsx';
 import MusicProjects from './showcase-components/projects/Music.tsx';
 import Window, {WindowProps} from '../os/Window.tsx';
 import NavBar from "./showcase-components/NavBar.tsx";
@@ -40,7 +40,7 @@ const Showcase: React.FC<ShowcaseProps> = (props) => {
                     <Route path='/projects/:route' element={<ProjectBox/>}/>
                     <Route path='/projects/music' element={<MusicProjects/>}/>
                     <Route path='/projects/projects' element={<SoftwareProjects/>}/>
-                    <Route path='/blogposts' element={<PostGrid/>}/>
+                    {/* <Route path='/blogposts' element={<PostGrid/>}/> */}
                 </Routes>
             </div>
         </Window>

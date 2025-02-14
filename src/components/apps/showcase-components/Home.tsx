@@ -10,13 +10,13 @@ const Home: React.FC<HomeProps> = () => {
         <div style={styles.page}>
             <div style={styles.header}>
                 <h1 style={styles.name}>Konstantinos Mixios</h1>
-                <h2>Software Engineer - Backend Engineer</h2>
+                <h2>Software Engineer - FullStack Engineer</h2>
             </div>
             <div style={styles.buttons}>
                 <Link containerStyle={styles.link} to='about' text='ABOUT' />
                 <Link containerStyle={styles.link} to='contact' text='CONTACT'/>
                 <Link containerStyle={styles.link} to='projects' text='PROJECTS'/>
-                <Link containerStyle={styles.link} to='blogposts' text='BLOGPOST'/>
+                {/* <Link containerStyle={styles.link} to='blogposts' text='BLOGPOST'/> */}
             </div>
         </div>
     );
