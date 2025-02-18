@@ -11,7 +11,7 @@ import MusicProjects from './showcase-components/projects/Music.tsx';
 import Window, {WindowProps} from '../os/Window.tsx';
 import NavBar from "./showcase-components/NavBar.tsx";
 import SoftwareProjects from "./showcase-components/projects/Software.tsx";
-import MeetingMinute from "./meeting-components/meetings/ShortMeeting.tsx";
+//import MeetingMinute from "./meeting-components/meetings/ShortMeeting.tsx";
 
 export interface ShowcaseProps extends WindowProps {
 }

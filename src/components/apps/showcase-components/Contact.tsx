@@ -106,7 +106,7 @@ const Contact: React.FC<ContactProps> = () => {
     }, [formMessage]);
 
     return (
-        <div className='site-page-content'>
+        <div className='site-contact-page'>
             <BackArrow/>
             <br/>
             <br/>

@@ -17,7 +17,7 @@ const styles: {[key:string]: React.CSSProperties} = {
     arrowContainer: {
         position: 'absolute',
         top: 16,
-        left: 300,
+        left: 70,
         cursor: 'pointer',
     },
     arrow: {

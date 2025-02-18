@@ -8,7 +8,7 @@ import { IconName } from '../../assets/icons';
 import TerminalApp from '../apps/TerminalApp';
 import BookMeeting from "../apps/BookMeeting.tsx";
 import Minute from "../apps/meeting-components/meetings/ShortMeeting.tsx";
-//import backgroundImage from "../../assets/pictures/backgroundImage.png";
+//import backgroundImage from "../../assets/pictures/background-image-bike.jpg";
 
 export interface DesktopProps {}
 
