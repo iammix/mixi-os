@@ -8,7 +8,7 @@ import { IconName } from '../../assets/icons';
 import TerminalApp from '../apps/TerminalApp';
 import BookMeeting from "../apps/BookMeeting.tsx";
 import Minute from "../apps/meeting-components/meetings/ShortMeeting.tsx";
-//import backgroundImage from "../../assets/pictures/background-image-bike.jpg";
+import backgroundImage from "../../assets/pictures/background-black-space.jpg";
 
 export interface DesktopProps {}
 
@@ -239,11 +239,11 @@ const styles: StyleSheetCSS = {
     desktop: {
         minHeight: '100%',
         flex: 1,
-        //backgroundImage: `url(${backgroundImage})`,
+        backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: 'bottom',
         backgroundRepeat: 'no-repeat',
-        backgroundColor: Colors.turquoise,
+        //backgroundColor: Colors.turquoise,
     },
     shutdown: {
         minHeight: '100%',
