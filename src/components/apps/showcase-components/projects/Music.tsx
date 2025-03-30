@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 // @ts-ignore
-import ItsMixvirus from '../../../../assets/audio/ItsMixvirus.wav';
-import cd from '../../../../assets/icons/cd.png'
+import Beat1 from '../../../../assets/audio/ItsMixvirus.wav';
+import Beat2 from '../../../../assets/audio/Ainta.mp3';
+import Beat3 from '../../../../assets/audio/Eeeeeii.mp3';
+import Beat4 from '../../../../assets/audio/Goodness.mp3';
+
+import cd from '../../../../assets/icons/cd.png';
 import MusicPlayer from '../../../general/MusicPlayer';
 import BackArrow from "../../../general/BackArrow.tsx";
 
@@ -18,174 +22,83 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
             <br />
             <div className="text-block">
                 <p>
-                    Music has been a passion of mine for my whole life. When I
-                    was in high school, I downloaded FL Studio and started to
-                    produce my own hip-hop beats.
+                    Music has always been a core part of my life. Back in high school, I discovered FL Studio and started crafting my own beats, deeply influenced by old-school rap and classic hip-hop sounds.
                 </p>
                 <br />
                 <p>
-                    I don't release the music that I make publicly as I not only
-                    find it difficult to finish songs, but also it's not a
-                    priority of mine since I produce mostly because I enjoy the
-                    process of learning and creating. However if I am going to
-                    dedicate a whole page of my portfolio to my music, you bet
-                    I'll have some examples to showoff.
+                    Under the name MixVirus Beats, I dedicated countless hours to creating instrumentals that captured the raw, rhythmic energy of hip-hop. Producing beats became a creative escape, a way to experiment with sounds and techniques that resonated with my early influences.
                 </p>
                 <br />
                 <p>
-                    Below are some more recent Musical Endeavors I've been
-                    working on. I hope you enjoy the music and enjoy the stories
-                    behind each of the tracks.
+                    Although I never pursued music production as a full-time endeavor, I still have a deep love for the process. Here are a few of my past projects—tracks that reflect my evolution as a beatmaker and my passion for hip-hop production.
                 </p>
             </div>
-            <h2>Exploring house</h2>
+            
+            <h2>Early Hip-Hop Beats</h2>
             <br />
             <p>
-                In 2020 I went through a phase of really enjoying house. Some of
-                my favorite artists at the time were Malaa, Chirs Lake, Kyle
-                Walker and many more. Inspired, I decided to take a stab at
-                making some house tracks.
+                My first productions were heavily inspired by golden-era hip-hop—gritty drums, soulful samples, and deep bass grooves. I spent hours chopping samples, layering kicks and snares, and experimenting with different arrangements.
             </p>
             <br />
+            <MusicPlayer
+                src={Beat2}
+                title="Raw Vibes"
+                subtitle="MixVirus Beats - 2013"
+                currentSong={currentSong}
+                setCurrentSong={setCurrentSong}
+            />
+            <br />
             <p>
-                I failed a few times as I wasn't really able to nail the style
-                and groove I was going for but ultimately ended up creating the
-                piece below.
+                This track represents my early style—boom-bap drums with a soulful touch. It was one of the first beats where I felt like I truly captured the sound I was aiming for.
             </p>
             <br />
 
             <MusicPlayer
-                src={ItsMixvirus}
-                title="Timeless"
-                subtitle="Henry Heffernan - 2022"
+                src={Beat3}
+                title="Ei"
+                subtitle='MixVirus Beats - 2013'
                 currentSong={currentSong}
-                setCurrentSong={setCurrentSong}
-            />
-
-            <br />
-            <br />
+                setCurrentSong={setCurrentSong}/>
+            <br/>
             <p>
-                I love so much about this track. I'm particularly very proud of
-                the composition and the trichotomy of the happy upbeat energy in
-                the intro and first drop, into the rich and euphoric bridge,
-                before delving into the darkness of the final build and drop. I
-                had an absolute blast making this back in the fall of 2020, and
-                every time I revisit it to tweak it just a little more, I have
-                so much fun.
+                Those two tracks were my first bangers where I told to my self that it's time to aim higher!
             </p>
+            
+            <h2>Experimenting with Modern Sounds</h2>
             <br />
             <p>
-                After making this track around fall 2020, my interest for house
-                overall was tapering off. Around this time I was starting to go
-                to the gym more consistently and ended up listening to a lot
-                more hard bass music, specifically drum & bass, mid tempo and of
-                course dubstep.
-            </p>
-            <br />
-            <h2>Mid-Tempo?</h2>
-            <br />
-            <p>
-                Only about a month after taking a step away from house I started
-                working on a mid-tempo track which I called edge. I did a lot of
-                experimenting with this track, and to this day I'm very proud
-                with how it turned out. I never got around to finishing it up
-                and giving it a proper outro, but I'm still very happy with it's
-                current state.
+                As I continued developing my craft, I began exploring more contemporary styles—mixing elements of trap, lo-fi, and electronic influences into my beats.
             </p>
             <br />
             <MusicPlayer
-                src={ItsMixvirus}
-                title="Edge [W.I.P.]"
-                subtitle="Henry Heffernan - 2021"
+                src={Beat1}
+                title="Elevate"
+                subtitle="MixVirus Beats - 2017"
                 currentSong={currentSong}
                 setCurrentSong={setCurrentSong}
             />
-            <br />
-            <p>
-                This track is so dark and I love it! The bass and percussion are
-                the obvious stars of the piece, and I had a blast designing each
-                of them. The bass in this song is layered with a lot of textures
-                and they really give it a lot of the character it needs to be
-                the driving force of the track. The percussion on the other hand
-                gives the track a lot of depth in the high end so when
-                juxtaposed with the bass it radiates this dark and mysterious
-                vibe.
-            </p>
-            <br />
-            <h2>My love for Drum & Bass</h2>
-            <br />
-            <p>
-                I've always loved drum & bass, and over the years I feel like I
-                always come back to it. My first song I ever made was a DnB
-                track and as I've continued to make music over these last few
-                years the way I produce DnB really reflects my specific taste at
-                that time. It's very fun looking back at the various DnB styles
-                I've taken stabs at over time and how my taste has evolved.
-            </p>
-            <br />
-            <p>
-                The track below is a snip-it from a DnB track I started work on
-                back in 2019. I recently decided to pick it up again and work on
-                it more because I loved the idea, bassline and especially the
-                drums. Below is a short demo of the track including a small
-                buildup and drop.
-            </p>
-            <br />
             <MusicPlayer
-                src={ItsMixvirus}
-                title="Break [Demo]"
-                subtitle="Henry Heffernan - 2019/2022"
+                src={Beat4}
+                title="Goodness"
+                subtitle="MixVirus Beats - 2018"
                 currentSong={currentSong}
                 setCurrentSong={setCurrentSong}
             />
             <br />
             <p>
-                Like I said, I decided to come back to this track because I
-                absolutely loved so much about it. When I picked up work on it
-                again I decided to totally remix the drums and I'm super proud
-                with how they turned out. So proud in fact, I wanted to show
-                them off some more on their own! Below are the drums in the
-                above track, but isolated. I have also included the sub bass
-                because it is drum and bass after all!
+                These beats showcase a transition from old-school hip-hop to a more modern, ambient sound, featuring atmospheric pads and hard-hitting 808s.
             </p>
             <br />
-            <MusicPlayer
-                src={ItsMixvirus}
-                title="Break [Drums and Sub]"
-                subtitle="Henry Heffernan - 2019/2022"
-                currentSong={currentSong}
-                setCurrentSong={setCurrentSong}
-            />
+            
+            <h2>What's Next for MixVirus Beats?</h2>
             <br />
             <p>
-                There are a lot of layers to DnB drums, and I honestly find them
-                the hardest to mix and get right since the sound design of DnB
-                so often wants to fight in the same frequency range as the
-                drums. Because of this I use very aggressive sidechain to keep
-                the drums clear while giving me the freedom to not have to
-                overly eq the bass and general sound design. I also find that
-                parallel compression on drums in DnB can be an absolute life
-                saver to keep the drums controlled but still hard hitting.
-            </p>
-            <br />
-            <h2>Next chapter for MixVirus beats...</h2>
-            <br />
-            <p>
-                I love to make music and will continue to make music as long as
-                I can. I think soon enough I will be releasing music publicly
-                since I feel like my personal style has slowly developed into
-                something I am proud of over these last few years. I also want
-                to one day make an album, but that is a long ways away.
+                While I no longer produce music as often as I used to, the passion remains. One day, I might revisit some unfinished projects or even release a collection of my best beats.
             </p>
             <br />
             <p>
-                I am aware this section of my portfolio is rather short, but
-                it's because I am very selective with what I want to show off to
-                the world. I've been producing for over 6 years and have made
-                hundreds maybe even a thousand tracks/loops in that time. I only
-                recently have been feeling very content with the stuff I've made
-                and I'm very excited to see what I can do for the future. Thanks
-                for listening I hope you enjoyed!
+                I hope you enjoy listening to these tracks as much as I enjoyed making them. Thanks for stopping by and checking out my music journey!
+                You can check more of my beats at my <a href="https://www.soundcloud.com/mixvirusbeats">soundcloud.com/mixvirusbeats</a>
             </p>
             <br />
         </div>

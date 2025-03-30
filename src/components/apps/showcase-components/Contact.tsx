@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-//import colors from '../../../constants/colors';
+import colors from '../../../constants/colors';
 import xIcon from '../../../assets/pictures/xIcon.png';
 import githubIcon from '../../../assets/pictures/github.png';
 import linkedInIcon from '../../../assets/pictures/linkedin.png';
@@ -34,9 +34,9 @@ const Contact: React.FC<ContactProps> = () => {
     const [name, setName] = useState('');
     const [message, setMessage] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
-    const [isLoading, ] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [formMessage, setFormMessage] = useState('');
-    const [, setFormMessageColor] = useState('');
+    const [formMessageColor, setFormMessageColor] = useState('');
 
     useEffect(()=>{
         if (validateEmail(email) && name.length > 0 && message.length > 0) {
@@ -46,6 +46,55 @@ const Contact: React.FC<ContactProps> = () => {
         }
     }, [email, name, message]);
 
+    async function submitForm() {
+        if (!isFormValid) {
+            setFormMessage('Form unable to validate, please try again.');
+            setFormMessageColor('red');
+            return;
+        }
+        try {
+            setIsLoading(true);
+            const res = await fetch(
+                'https://contact-api-b1b142c7f251.herokuapp.com/contact',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email,
+                        name,
+                        message,
+                    }),
+                }
+            );
+            // the response will be either {success: true} or {success: false, error: message}
+            const data = (await res.json()) as
+                | {
+                      success: false;
+                      error: string;
+                  }
+                | { success: true };
+            if (data.success) {
+                setFormMessage(`Message successfully sent. Thank you ${name}!`);
+                setEmail('');
+                setName('');
+                setMessage('');
+                setFormMessageColor(colors.blue);
+                setIsLoading(false);
+            } else {
+                setFormMessage(data.error);
+                setFormMessageColor(colors.red);
+                setIsLoading(false);
+            }
+        } catch (e) {
+            setFormMessage(
+                'There was an error sending your message. Please try again.'
+            );
+            setFormMessageColor(colors.red);
+            setIsLoading(false);
+        }
+    }
 
     useEffect(()=>{
         if (formMessage.length > 0) {
@@ -57,7 +106,7 @@ const Contact: React.FC<ContactProps> = () => {
     }, [formMessage]);
 
     return (
-        <div className='site-page-content'>
+        <div className='site-contact-page'>
             <BackArrow/>
             <br/>
             <br/>
@@ -81,7 +130,7 @@ const Contact: React.FC<ContactProps> = () => {
                     />
                 </div>
             </div>
-            <div className='text-block'>
+            <div className="text-block">
                 <p>
                     I'm excited to connect with you! Whether you have a question, a project idea,
                     or just want to say hello, feel free to reach out.
@@ -90,36 +139,41 @@ const Contact: React.FC<ContactProps> = () => {
                 <br />
                 <p>
                     <b>Email: </b>
-                    <a href='mailto:contact@mixiosk.com'>contact@mixiosk.com</a>
+                    <a href="mailto:k.mixios@gmail.com">
+                        k.mixios@gmail.com
+                    </a>
                 </p>
+
                 <div style={styles.form}>
                     <label>
                         <p>
                             {!name && <span style={styles.star}>*</span>}
-                            <b>Name:</b>
+                            <b>Your name:</b>
                         </p>
                     </label>
                     <input
                         style={styles.formItem}
-                        type='text'
-                        name='name'
-                        placeholder='Name'
+                        type="text"
+                        name="name"
+                        placeholder="Name"
                         value={name}
-                        onChange={(e)=>setName(e.target.value)}
+                        onChange={(e) => setName(e.target.value)}
                     />
                     <label>
-                    <p>
-                        {!validateEmail(email) && (<span style={styles.star}>*</span>)}
-                        <b>Email:</b>
-                    </p>
+                        <p>
+                            {!validateEmail(email) && (
+                                <span style={styles.star}>*</span>
+                            )}
+                            <b>Email:</b>
+                        </p>
                     </label>
                     <input
                         style={styles.formItem}
-                        type='email'
-                        name='email'
-                        placeholder='Email'
+                        type="email"
+                        name="email"
+                        placeholder="Email"
                         value={email}
-                        onChange={(e)=>setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                     <label>
                         <p>
@@ -128,46 +182,54 @@ const Contact: React.FC<ContactProps> = () => {
                         </p>
                     </label>
                     <textarea
-                        name='message'
-                        placeholder='Message'
+                        name="message"
+                        placeholder="Message"
                         style={styles.formItem}
                         value={message}
-                        onChange={(e)=>setMessage(e.target.value)}
+                        onChange={(e) => setMessage(e.target.value)}
                     />
-                    <div>
-                        {/*TODO: add functionality to the submit button */}
+                    <div style={styles.buttons}>
                         <button
-                            className='site-button'
+                            className="site-button"
                             style={styles.button}
-                            type='submit'
+                            type="submit"
                             disabled={!isFormValid || isLoading}
+                            onMouseDown={submitForm}
                         >
                             {!isLoading ? (
                                 'Send Message'
                             ) : (
-                                <p className='loading'>Sending</p>
+                                <p className="loading">Sending</p>
                             )}
                         </button>
-                        {/*<div style={styles.formInfo}>*/}
-                        {/*    <p style={Object.assign({}, {color: formMessageColor})}>*/}
-                        {/*        <b>*/}
-                        {/*            <sub>*/}
-                        {/*                {formMessage ? `${formMessage}`: 'All messages get forwarded to my personal email'}*/}
-                        {/*            </sub>*/}
-                        {/*        </b>*/}
-                        {/*    </p>*/}
-                        {/*    <p>*/}
-                        {/*        <sub>*/}
-                        {/*            {!isFormValid ? (*/}
-                        {/*                <span>*/}
-                        {/*                    <b style={styles.star}>*</b>*/}
-                        {/*                </span>*/}
-                        {/*            ) : (*/}
-                        {/*                '\xa0'*/}
-                        {/*            )}*/}
-                        {/*        </sub>*/}
-                        {/*    </p>*/}
-                        {/*</div>*/}
+                        <div style={styles.formInfo}>
+                            <p
+                                style={Object.assign(
+                                    {},
+                                    { color: formMessageColor }
+                                )}
+                            >
+                                <b>
+                                    <sub>
+                                        {formMessage
+                                            ? `${formMessage}`
+                                            : ' All messages get forwarded straight to my personal email'}
+                                    </sub>
+                                </b>
+                            </p>
+                            <p>
+                                <sub>
+                                    {!isFormValid ? (
+                                        <span>
+                                            <b style={styles.star}>*</b> =
+                                            required
+                                        </span>
+                                    ) : (
+                                        '\xa0'
+                                    )}
+                                </sub>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,24 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CvDownload from './CvDownload';
-import me from '../../../assets/pictures/curme.jpg'
+import me from '../../../assets/pictures/curme.jpg';
 import BackArrow from "../../general/BackArrow.tsx";
-export interface AboutProps { }
+
+export interface AboutProps {}
 
 const About: React.FC<AboutProps> = () => {
     return (
         <div className="site-page-content">
-            <BackArrow/>
+            <BackArrow />
             <h1 style={{ marginLeft: -16 }}>Hello!</h1>
             <h3>I'm Konstantinos</h3>
             <br />
             <div className="text-block">
                 <p>
-                    I'm a passionate software developer currently working as a Freelancer! I graduated in 2018 from Aristotle University of Thessaloniki with a Integrated Master's degree in Civil & Structural Engineering. In the next year I also finished a MSc. in Structural and Earthquake Engineering at Aristotle University of Thessaloniki.
+                    I'm a software engineer with a strong passion for technology, solving real-life problems, and data-driven solutions.
+                    I hold an Integrated Master's degree in Civil & Structural Engineering from Aristotle University of Thessaloniki (2018) and a Master's in Structural and Earthquake Engineering from the same institution (2019).
                 </p>
                 <br />
                 <p>
-                    I appreciate you taking the time to explore my portfolio. It was a joy to create, and I hope you find it both engaging and informative. If you have any questions or feedback, please don't hesitate to reach out via the <Link to="/contact">contact form</Link> or email me at <a href="mailto:k.mixios@gmail.com">k.mixios@gmail.com</a>.
+                    Over the years, I've bridged the gap between engineering and technology, developing custom software solutions, compuntational tools, data analysis tools, and digital applications tailored to the needs of the product owners. My expertise spans computational analysis, backend system designing, and software development—fields where precision and innovation go hand in hand.
+                </p>
+                <br />
+                <p>
+                    I created this portfolio to share my work, insights, and projects. I hope you find it both engaging and informative! If you have any questions or just want to connect, feel free to reach out via the <Link to="/contact">contact form</Link> or email me at <a href="mailto:k.mixios@gmail.com">k.mixios@gmail.com</a>.
                 </p>
             </div>
             <CvDownload />
@@ -26,15 +32,18 @@ const About: React.FC<AboutProps> = () => {
                 <h3>About Me</h3>
                 <br />
                 <p>
-                    My journey into the world of technology began at a young age, fueled by an innate curiosity for how things work. I was always fascinated with building and creating, which eventually led me to discover programming. After moving from [Your Hometown] to [New Location], I continued to nurture this passion through various projects and educational pursuits.
+                    My journey into software developing started with my fascination for problem-solving and technology. During my studies, I worked on several research projects involving computational analysis, numerical modeling, and real-time monitoring systems.
                 </p>
                 <br />
                 <p>
-                    During high school, I honed my skills by working on various web and software development projects. My love for technology only grew as I collaborated with friends and mentors, taking on challenges that pushed my understanding and creativity. Some of these projects can be viewed on my <Link to="/projects/software">Software Projects</Link> page.
+                    As I delved deeper into these topics, I realized the power of coding in automating complex tasks, analyzing massive datasets, and improving decision-making processes in engineering. This led me to develop custom Python libraries.
                 </p>
                 <br />
+                <p>
+                    I also have a keen interest in entrepreneurship and product development, with a focus on building scalable software solutions.
+                </p>
                 <br />
-                <div style={{}}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                     <div
                         style={{
                             flex: 1,
@@ -43,59 +52,50 @@ const About: React.FC<AboutProps> = () => {
                             flexDirection: 'column',
                         }}
                     >
-                        <h3>My Hobbies</h3>
+                        <h3>Beyond Work</h3>
                         <br />
                         <p>
-                            When I'm not coding, I indulge in a variety of hobbies. I'm passionate about <Link to="/projects/music">Music Production</Link> and <Link to="/projects/art">Digital Art</Link>, which allow me to express my creativity in different ways. I also enjoy staying active through workouts, experimenting with new recipes in the kitchen, and, of course, playing video games.
+                            When I am not working on engineering or software projects, you can find me rowing, training for triathlon, and experimenting with fitness tracking. I'm deeply interested in human performance, recovery metrics, and wearable technology, which has led me to develop an App for monitoring training load, HRV, and recovery.
                         </p>
                         <br />
                         <p>
-                            During my college years, I was an active member of [Your Fraternity/Club], where I held multiple leadership positions and formed lifelong friendships. This community played a pivotal role in shaping my college experience.
+                            I'm also passionate about drawing, music, cooking and traveling. These activities provide balance and inspiration, often influencing my approach to both problem-solving and creativity in tech.
                         </p>
                     </div>
                     <div style={styles.verticalImage}>
                         <img src={me} style={styles.image} alt="Current me" />
                         <p>
                             <sub>
-                                <b>Figure 2:</b> A recent photo, [Month, Year]
+                                <b>Figure 1:</b> Me @ Mount Olympus, Greece 2021
                             </sub>
                         </p>
                     </div>
                 </div>
                 <br />
-                <br />
                 <p>
-                    Thanks for taking the time to learn more about me! I hope you enjoy exploring the rest of my portfolio. If you stumble upon the hidden easter egg, let me know on X (aka Twitter) at <a rel="noreferrer" target="_blank" href="https://x.com/iammix95">@iammix95</a>. Have fun!
+                    Thanks for taking the time to learn more about me!
+                    If you stumble upon the hidden easter egg, let me know on X (Twitter) at <a rel="noreferrer" target="_blank" href="https://x.com/iammix95">@iammix95</a>.  
+                    Hope you enjoy browsing through my projects!
                 </p>
                 <br />
                 <p>
-                    If you have any questions or would like to connect, feel free to reach out through the <Link to="/contact">contact page</Link> or email me at <a href="mailto:k.mixios@gmail.com">k.mixios@gmail.com</a>.
+                    For collaborations, inquiries, or just a casual chat, you can reach me via the <Link to="/contact">contact page</Link> or email me at <a href="mailto:k.mixios@gmail.com">k.mixios@gmail.com</a>.
                 </p>
             </div>
         </div>
     );
 };
 
-
 interface StyleSheetCSS {
     [key: string]: React.CSSProperties;
 }
 
 const styles: StyleSheetCSS = {
-    contentHeader: {
-        marginBottom: 16,
-        fontSize: 48,
-    },
     image: {
         height: 'auto',
         width: '100%',
         borderRadius: '50px',
         overflow: 'hidden'
-    },
-    topImage: {
-        height: 'auto',
-        width: '100%',
-        marginBottom: 32,
     },
     verticalImage: {
         alignSelf: 'center',
@@ -105,6 +105,6 @@ const styles: StyleSheetCSS = {
         textAlign: 'center',
         flexDirection: 'column',
     },
-};
+}
 
 export default About;

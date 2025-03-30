@@ -273,8 +273,19 @@ input:active {
 .site-page-content {
   display: flex;
   flex-direction: column;
-  margin-left: 300px;
+  margin-left: 100px;
   width: 100%;
+  padding: 64px;
+  padding-top: 32px;
+  padding-left: 16px;
+  overflow-y: scroll;
+}
+
+.site-contact-page {
+  display: flex;
+  flex-direction: column;
+  margin-left: 300px;
+  width: 50%;
   padding: 64px;
   padding-top: 32px;
   padding-left: 16px;
