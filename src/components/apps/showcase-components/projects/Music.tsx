@@ -4,14 +4,12 @@ import Beat1 from '../../../../assets/audio/ItsMixvirus.wav';
 import Beat2 from '../../../../assets/audio/Ainta.mp3';
 import Beat3 from '../../../../assets/audio/Eeeeeii.mp3';
 import Beat4 from '../../../../assets/audio/Goodness.mp3';
-
-import cd from '../../../../assets/icons/cd.png';
 import MusicPlayer from '../../../general/MusicPlayer';
 import BackArrow from "../../../general/BackArrow.tsx";
 
 export interface MusicProjectsProps {}
 
-const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
+const MusicProjects: React.FC<MusicProjectsProps> = () => {
     const [currentSong, setCurrentSong] = useState<string>('');
 
     return (

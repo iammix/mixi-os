@@ -348,17 +348,5 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
         </div>
     );
 };
-interface StyleSheetCSS {
-    [key: string]: React.CSSProperties;
-}
-const styles: StyleSheetCSS = {
-    video: {
-        width: '100%',
-        padding: 12,
-    },
-    caption: {
-        width: '80%',
-    },
-};
 
 export default SoftwareProjects;

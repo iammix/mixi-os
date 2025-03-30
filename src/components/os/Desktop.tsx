@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import Colors from '../../constants/colors';
 import ShowCase from '../apps/Showcase';
 import ShutdownSequence from './ShutdownSequence';
 import Toolbar from './Toolbar';
@@ -7,12 +6,28 @@ import DesktopShortcut, { DesktopShortcutProps } from './DesktopShortcut';
 import { IconName } from '../../assets/icons';
 import TerminalApp from '../apps/TerminalApp';
 import BookMeeting from "../apps/BookMeeting.tsx";
-import Minute from "../apps/meeting-components/meetings/ShortMeeting.tsx";
+import type { WindowAppProps } from '../../types/DesktopTypes.ts';
+
 import backgroundImage from "../../assets/pictures/background-black-space.jpg";
 
 export interface DesktopProps {}
 
 type ExtendedWindowAppProps<T> = T & WindowAppProps;
+
+
+type DesktopWindow = {
+    zIndex: number;
+    minimized: boolean;
+    component: JSX.Element;
+    name: string;
+    icon: IconName;
+  };
+  
+  type DesktopWindows = {
+    [key: string]: DesktopWindow;
+  };
+  
+
 
 const APPLICATIONS: {
     [key in string]: {
@@ -162,7 +177,7 @@ const Desktop: React.FC<DesktopProps> = () => {
 
     const addWindow = useCallback(
         (key: string, element: JSX.Element) => {
-            setWindows((prevState) => ({
+            setWindows((prevState:DesktopWindows) => ({
                 ...prevState,
                 [key]: {
                     zIndex: getHighestZIndex() + 1,
