@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 // @ts-ignore
-import MyOldTrack from '../../../../assets/audio/ItsMixvirus.wav';
+import Beat1 from '../../../../assets/audio/ItsMixvirus.wav';
+import Beat2 from '../../../../assets/audio/Ainta.mp3';
+import Beat3 from '../../../../assets/audio/Eeeeeii.mp3';
+import Beat4 from '../../../../assets/audio/Goodness.mp3';
+
 import cd from '../../../../assets/icons/cd.png';
 import MusicPlayer from '../../../general/MusicPlayer';
 import BackArrow from "../../../general/BackArrow.tsx";
@@ -37,9 +41,9 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
             </p>
             <br />
             <MusicPlayer
-                src={MyOldTrack}
+                src={Beat2}
                 title="Raw Vibes"
-                subtitle="MixVirus Beats - 2015"
+                subtitle="MixVirus Beats - 2013"
                 currentSong={currentSong}
                 setCurrentSong={setCurrentSong}
             />
@@ -48,6 +52,17 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
                 This track represents my early style—boom-bap drums with a soulful touch. It was one of the first beats where I felt like I truly captured the sound I was aiming for.
             </p>
             <br />
+
+            <MusicPlayer
+                src={Beat3}
+                title="Ei"
+                subtitle='MixVirus Beats - 2013'
+                currentSong={currentSong}
+                setCurrentSong={setCurrentSong}/>
+            <br/>
+            <p>
+                Those two tracks were my first bangers where I told to my self that it's time to aim higher!
+            </p>
             
             <h2>Experimenting with Modern Sounds</h2>
             <br />
@@ -56,15 +71,22 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
             </p>
             <br />
             <MusicPlayer
-                src={MyOldTrack}
+                src={Beat1}
                 title="Elevate"
+                subtitle="MixVirus Beats - 2017"
+                currentSong={currentSong}
+                setCurrentSong={setCurrentSong}
+            />
+            <MusicPlayer
+                src={Beat4}
+                title="Goodness"
                 subtitle="MixVirus Beats - 2018"
                 currentSong={currentSong}
                 setCurrentSong={setCurrentSong}
             />
             <br />
             <p>
-                This beat showcases a transition from old-school hip-hop to a more modern, ambient sound, featuring atmospheric pads and hard-hitting 808s.
+                These beats showcase a transition from old-school hip-hop to a more modern, ambient sound, featuring atmospheric pads and hard-hitting 808s.
             </p>
             <br />
             
@@ -76,6 +98,7 @@ const MusicProjects: React.FC<MusicProjectsProps> = (props) => {
             <br />
             <p>
                 I hope you enjoy listening to these tracks as much as I enjoyed making them. Thanks for stopping by and checking out my music journey!
+                You can check more of my beats at my <a href="https://www.soundcloud.com/mixvirusbeats">soundcloud.com/mixvirusbeats</a>
             </p>
             <br />
         </div>
