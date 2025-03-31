@@ -71,8 +71,8 @@ const Window: React.FC<WindowProps> = (props) => {
         const { clientX, clientY } = event;
         const curWidth = clientX - left;
         const curHeight = clientY - top;
-        if (curWidth > 520) resizeRef.current?.style.width = `${curWidth}px`;
-        if (curHeight > 220) resizeRef.current?.style.height = `${curHeight}px`;
+        if (curWidth > 520) resizeRef.current.style.width = `${curWidth}px`;
+        if (curHeight > 220) resizeRef.current.style.height = `${curHeight}px`;
         resizeRef.current.style.opacity = 1;
     };
 
