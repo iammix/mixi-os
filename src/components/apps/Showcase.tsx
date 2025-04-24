@@ -1,5 +1,5 @@
 import React from 'react';
-import {Routes, Route} from 'react-router-dom'
+import {useNavigate, Routes, Route} from 'react-router-dom'
 import About from "./showcase-components/About.tsx";
 import Contact from "./showcase-components/Contact.tsx";
 import Home from "./showcase-components/Home.tsx";
@@ -15,6 +15,11 @@ export interface ShowcaseProps extends WindowProps {
 
 const Showcase: React.FC<ShowcaseProps> = (props) => {
     const {initWidth, initHeight} = useInitialWindowSize({margin: 100});
+    const navigate = useNavigate();
+    const handleClose = () => {
+        navigate('/');
+        props.closeWindow();
+    }
 
     return (
         <Window
@@ -24,7 +29,7 @@ const Showcase: React.FC<ShowcaseProps> = (props) => {
             height={initHeight}
             windowTitle="Konstantinos Mixios - About me"
             windowBarIcon="windowExplorerIcon"
-            closeWindow={props.closeWindow}
+            closeWindow={handleClose}
             onInteract={props.onInteract}
             minimizeWindow={props.minimizeWindow}
             bottomLeftText={''}>
@@ -37,7 +42,6 @@ const Showcase: React.FC<ShowcaseProps> = (props) => {
                     <Route path='/projects/:route' element={<ProjectDetailPage />} />
                     <Route path='/projects/music' element={<MusicProjects/>}/>
                     <Route path='/projects/software' element={<SoftwareProjects/>}/>
-                    {/* <Route path='/blogposts' element={<PostGrid/>}/> */}
                 </Routes>
             </div>
         </Window>

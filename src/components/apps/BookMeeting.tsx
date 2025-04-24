@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import useInitialWindowSize from "../../hooks/useInitialWindowSize.tsx";
 import Window, {WindowProps} from "../os/Window.tsx";
 import {Route, Routes} from "react-router-dom";
@@ -11,6 +12,11 @@ export interface BookMeetingProps extends WindowProps {
 
 const BookMeeting: React.FC<BookMeetingProps> = (props) => {
     const {initWidth, initHeight} = useInitialWindowSize({margin: 100});
+        const navigate = useNavigate();
+        const handleClose = () => {
+            navigate('/');
+            props.closeWindow();
+        }
     return (
         <Window
             top={24}
@@ -19,7 +25,7 @@ const BookMeeting: React.FC<BookMeetingProps> = (props) => {
             height={initHeight}
             windowTitle="Book meeting"
             windowBarIcon="windowExplorerIcon"
-            closeWindow={props.closeWindow}
+            closeWindow={handleClose}
             onInteract={props.onInteract}
             minimizeWindow={props.minimizeWindow}
             bottomLeftText={""}
