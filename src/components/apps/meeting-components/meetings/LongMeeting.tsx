@@ -9,7 +9,7 @@ const LongMeeting: React.FC<MeetingMinuteProps> = () => {
         <div className='site-page-content'>
             <BackArrow/>
             <iframe
-                src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0x7g8Iu4MzrMwORJFB5OGU2Y4uubm8Zd8HGtj0cs0tmBmUqUqT001POSRd1sONAmFS8XbLl3j_?gv=true"
+                src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ2ZpMtEVtM9JqipaZZ9XnRUSG1NibvGjGQFUeXGbCxasF2ghC1Ub43UzAF0o1ntdqrkI2TqNAxT?gv=true"
                 style={styles.borderStyle}></iframe>
         </div>
     )
