@@ -2,11 +2,10 @@ import React from "react";
 import calendarpx from "../../../assets/icons/calendar-px.gif";
 import MeetingBox from "./MeetingBox.tsx";
 import {useNavigate} from "react-router-dom";
-import {WindowProps} from "../../os/Window.tsx";
 
 export interface BookMeetingProps{}
 
-const BookMeeting: React.FC<BookMeetingProps> = (props) => {
+const MeetingHome: React.FC<BookMeetingProps> = () => {
 
     const navigate = useNavigate();
 
@@ -53,4 +52,4 @@ const styles: StyleSheetCSS = {
     },
 };
 
-export default BookMeeting;
+export default MeetingHome;

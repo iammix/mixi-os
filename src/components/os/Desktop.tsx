@@ -6,16 +6,14 @@ import DesktopShortcut, { DesktopShortcutProps } from './DesktopShortcut';
 import { IconName } from '../../assets/icons';
 import TerminalApp from '../apps/TerminalApp';
 import BookMeeting from "../apps/BookMeeting.tsx";
-import type { WindowAppProps } from '../../types/DesktopTypes.ts';
 
 import backgroundImage from "../../assets/pictures/background-black-space.jpg";
+import { WindowProps } from './Window.tsx';
 
 export interface DesktopProps {}
 
-type ExtendedWindowAppProps<T> = T & WindowAppProps;
 
-
-type DesktopWindow = {
+export type DesktopWindow = {
     zIndex: number;
     minimized: boolean;
     component: JSX.Element;
@@ -23,7 +21,7 @@ type DesktopWindow = {
     icon: IconName;
   };
 
-  type DesktopWindows = {
+export type DesktopWindows = {
     [key: string]: DesktopWindow;
   };
   
@@ -34,7 +32,7 @@ const APPLICATIONS: {
         key: string;
         name: string;
         shortcutIcon: IconName;
-        component: React.FC<ExtendedWindowAppProps<never>>;
+        component: React.FC<WindowProps>;
     };
 } = {
 
@@ -84,10 +82,14 @@ const Desktop: React.FC<DesktopProps> = () => {
                     addWindow(
                         app.key,
                         <app.component
-                            onInteract={() => onWindowInteract(app.key)}
-                            onMinimize={() => minimizeWindow(app.key)}
-                            onClose={() => removeWindow(app.key)}
                             key={app.key}
+                            onInteract={() => onWindowInteract(app.key)}
+                            minimizeWindow={() => minimizeWindow(app.key)}
+                            closeWindow={() => removeWindow(app.key)}
+                            top={24}
+                            left={56}
+                            width={800}
+                            height={600}
                         />
                     );
                 },
@@ -210,7 +212,7 @@ const Desktop: React.FC<DesktopProps> = () => {
                             key,
                             onInteract: () => onWindowInteract(key),
                             closeWindow: () => removeWindow(key),
-                            minimizeWindow: () => minimizeWindow(key),
+                            minimizeWindow: () => minimizeWindow(key)
                         })}
                     </div>
                 );

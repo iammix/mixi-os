@@ -1,6 +1,5 @@
 export interface WindowAppProps {
-    onClose: () => void;
-    onInteract: () => void;
-    onMinimize: () => void;
-  }
-  
+  onInteract: () => void;
+  closeWindow: () => void;
+  minimizeWindow: () => void;
+}

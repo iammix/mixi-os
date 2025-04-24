@@ -19,7 +19,7 @@ const DesktopShortcut: React.FC<DesktopShortcutProps> = ({
     const [isSelected, setIsSelected] = useState(false);
     const [shortcutId, setShortcutId] = useState('');
     const [lastSelected, setLastSelected] = useState(false);
-    const containerRef = useRef<never>();
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
     const [scaledStyle, setScaledStyle] = useState({});
 
@@ -143,6 +143,11 @@ const DesktopShortcut: React.FC<DesktopShortcutProps> = ({
         </div>
     );
 };
+interface StyleSheetCSS {
+    [key: string]: React.CSSProperties;
+}
+
+
 
 const styles: StyleSheetCSS = {
     appShortcut: {

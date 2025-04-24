@@ -1,6 +1,7 @@
 import React from 'react';
 import useInitialWindowSize from "../../hooks/useInitialWindowSize.tsx";
 import Window from '../os/Window.tsx';
+import { WindowAppProps } from '../../types/DesktopTypes.ts';
 
 export interface TerminalAppProps extends WindowAppProps { }
 
@@ -15,9 +16,9 @@ const TerminalApp: React.FC<TerminalAppProps> = (props) => {
             height={initHeight}
             windowTitle="mixi-OS Terminal"
             windowBarIcon="windowExplorerIcon"
-            closeWindow={props.onClose}
+            closeWindow={props.closeWindow}
             onInteract={props.onInteract}
-            minimizeWindow={props.onMinimize}
+            minimizeWindow={props.minimizeWindow}
             bottomLeftText={''}>
             <div className='site-page'>
                 <iframe

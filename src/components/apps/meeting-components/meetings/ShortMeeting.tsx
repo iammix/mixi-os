@@ -10,7 +10,7 @@ const ShortMeeting: React.FC<MeetingMinuteProps> = () => {
             <BackArrow/>
             <iframe
                 style={styles.borderStyle}
-                src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ2Udegcp13zo-2MIg14Bwolj_0acirZ0EXAfCvONfEKBWfGAlrfiGOhqGzR5JFVBAXOq3oNTH12?gv=true"
+                src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ2WKSR6PLl6QyL586RA5SZ2k8_spK2c8XWPFZop27C21NNQSW7QqXXg4BsOtcoA6bbACVtmS156?gv=true"
                 ></iframe>
         </div>
     )

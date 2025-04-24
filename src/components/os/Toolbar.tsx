@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Colors from '../../constants/colors';
 import { Icon } from '../general';
+import type { DesktopWindows } from './Desktop'; // Adjust path if needed
+
 // import { } from '../general';
 // import Home from '../site/Home';
 // import Window from './Window';
@@ -20,9 +22,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
         const date = new Date();
         let hours = date.getHours();
         let minutes = date.getMinutes();
-        let date1 = date.getDate();
-        let month = date.getMonth();
-        let year = date.getFullYear();
         //console.log(date1+'/'+month+'/'+year);
         let amPm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
@@ -192,6 +191,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
         </div>
     );
 };
+
+interface StyleSheetCSS {
+    [key: string]: React.CSSProperties;
+}
+
 
 const styles: StyleSheetCSS = {
     toolbarOuter: {

@@ -1,9 +1,6 @@
-import React, {useState} from "react";
+import React from "react";
 import useInitialWindowSize from "../../hooks/useInitialWindowSize.tsx";
 import Window, {WindowProps} from "../os/Window.tsx";
-import calendarpx from "../../assets/icons/calendar-px.gif";
-import MeetingBox from "./meeting-components/MeetingBox.tsx";
-import MeetingMinute from "./meeting-components/meetings/ShortMeeting.tsx";
 import {Route, Routes} from "react-router-dom";
 import MeetingHome from "./meeting-components/MeetingHome.tsx";
 import ShortMeeting from "./meeting-components/meetings/ShortMeeting.tsx";
@@ -22,9 +19,9 @@ const BookMeeting: React.FC<BookMeetingProps> = (props) => {
             height={initHeight}
             windowTitle="Book meeting"
             windowBarIcon="windowExplorerIcon"
-            closeWindow={props.onClose}
+            closeWindow={props.closeWindow}
             onInteract={props.onInteract}
-            minimizeWindow={props.onMinimize}
+            minimizeWindow={props.minimizeWindow}
             bottomLeftText={""}
         >
             <Routes>
