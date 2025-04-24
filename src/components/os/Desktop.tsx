@@ -22,7 +22,7 @@ type DesktopWindow = {
     name: string;
     icon: IconName;
   };
-  
+
   type DesktopWindows = {
     [key: string]: DesktopWindow;
   };
@@ -209,7 +209,8 @@ const Desktop: React.FC<DesktopProps> = () => {
                         {React.cloneElement(element, {
                             key,
                             onInteract: () => onWindowInteract(key),
-                            onClose: () => removeWindow(key),
+                            closeWindow: () => removeWindow(key),
+                            minimizeWindow: () => minimizeWindow(key),
                         })}
                     </div>
                 );

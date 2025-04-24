@@ -1,17 +1,14 @@
 import React from 'react';
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
+import {Routes, Route} from 'react-router-dom'
 import About from "./showcase-components/About.tsx";
 import Contact from "./showcase-components/Contact.tsx";
 import Home from "./showcase-components/Home.tsx";
 import useInitialWindowSize from "../../hooks/useInitialWindowSize.tsx";
 import Projects from './showcase-components/Projects.tsx';
 import ProjectBox from './showcase-components/ProjectBox.tsx';
-//import PostGrid from './showcase-components/PostGrid.tsx';
 import MusicProjects from './showcase-components/projects/Music.tsx';
 import Window, {WindowProps} from '../os/Window.tsx';
-import NavBar from "./showcase-components/NavBar.tsx";
 import SoftwareProjects from "./showcase-components/projects/Software.tsx";
-//import MeetingMinute from "./meeting-components/meetings/ShortMeeting.tsx";
 
 export interface ShowcaseProps extends WindowProps {
 }
@@ -27,9 +24,9 @@ const Showcase: React.FC<ShowcaseProps> = (props) => {
             height={initHeight}
             windowTitle="Konstantinos Mixios - About me"
             windowBarIcon="windowExplorerIcon"
-            closeWindow={props.onClose}
+            closeWindow={props.closeWindow}
             onInteract={props.onInteract}
-            minimizeWindow={props.onMinimize}
+            minimizeWindow={props.minimizeWindow}
             bottomLeftText={''}>
             <div className='site-page'>
                 <Routes>
