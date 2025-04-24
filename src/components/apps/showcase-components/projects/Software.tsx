@@ -40,7 +40,7 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
                         <a
                             rel="noreferrer"
                             target="_blank"
-                            href="https://henryheffernan.com"
+                            href="https://mixiosk.com"
                         >
                             <p>
                                 <b>[Portfolio Webpage]</b> - mixiosk.com
