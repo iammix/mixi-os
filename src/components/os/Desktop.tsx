@@ -9,6 +9,7 @@ import BookMeeting from "../apps/BookMeeting.tsx";
 
 import backgroundImage from "../../assets/pictures/background-black-space.jpg";
 import { WindowProps } from './Window.tsx';
+import IntroPage from './IntroPage.tsx';
 
 export interface DesktopProps {}
 
@@ -57,6 +58,7 @@ const APPLICATIONS: {
 };
 
 const Desktop: React.FC<DesktopProps> = () => {
+    const [started, setStarted] = useState(false);
     const [windows, setWindows] = useState<DesktopWindows>({});
 
     const [shortcuts, setShortcuts] = useState<DesktopShortcutProps[]>([]);
@@ -193,7 +195,9 @@ const Desktop: React.FC<DesktopProps> = () => {
         [getHighestZIndex]
     );
 
-    return !shutdown ? (
+    return !started ? (
+        <IntroPage onStart={()=> setStarted(true)} />
+    ) : !shutdown ? (
         <div style={styles.desktop}>
             {/* For each window in windows, loop over and render  */}
             {Object.keys(windows).map((key) => {
