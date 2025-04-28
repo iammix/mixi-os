@@ -8,6 +8,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart }) => {
   const fullText = "mixi-OS";
   const [displayedText, setDisplayedText] = useState('');
   const [showStartButton, setShowStartButton] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     let index = 0;
@@ -18,9 +19,9 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart }) => {
       if (index < fullText.length - 1) {
         setDisplayedText(prev => prev + fullText[index]);
         index++;
-        setTimeout(typeLetter, 100);
+        setTimeout(typeLetter, 100); // typing speed
       } else {
-        setTimeout(() => setShowStartButton(true), 500);
+        setTimeout(() => setShowStartButton(true), 500); // 1s delay
       }
     }
 
@@ -40,13 +41,26 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart }) => {
         </h1>
       </div>
 
-      {showStartButton && (
-        <div style={styles.buttonContainer}>
-          <button style={styles.button} onClick={onStart}>
-            Start
-          </button>
-        </div>
-      )}
+      <div
+        style={{
+          ...styles.buttonContainer,
+          opacity: showStartButton ? 1 : 0,
+          transform: showStartButton ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.8)',
+          pointerEvents: showStartButton ? 'auto' : 'none',
+        }}
+      >
+        <button
+          style={{
+            ...styles.button,
+            ...(isHovered ? styles.buttonHover : {}),
+          }}
+          onClick={onStart}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          Start
+        </button>
+      </div>
     </div>
   );
 };
@@ -62,7 +76,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative', // Needed for the absolute button
+    position: 'relative',
     overflow: 'hidden',
   },
   textBox: {
@@ -81,23 +95,32 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: '10%',
+    bottom: '30%',
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
+    opacity: 0,
+    transform: 'translateY(20px) scale(0.8)',
+    transition: 'opacity 1s ease, transform 1s ease',
+    pointerEvents: 'none',
   },
   button: {
     backgroundColor: 'black',
     color: 'white',
-    fontSize: '2rem',
-    padding: '50px 20px',
+    fontSize: '1rem',
+    padding: '10px 40px',
     cursor: 'pointer',
     borderRadius: 4,
     border: '2px solid white',
+    transition: 'all 0.4s ease',
+  },
+  buttonHover: {
+    backgroundColor: 'white',
+    color: 'black',
   },
 };
 
-// Inject blinking cursor animation once
+// Blinking cursor animation
 const styleSheet = document.styleSheets[0];
 const keyframes =
   `@keyframes blink {
