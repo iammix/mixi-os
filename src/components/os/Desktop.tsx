@@ -59,6 +59,7 @@ const APPLICATIONS: {
 
 const Desktop: React.FC<DesktopProps> = () => {
     const [started, setStarted] = useState(false);
+    const [fadingOut, setFadingOut] = useState(false);
     const [windows, setWindows] = useState<DesktopWindows>({});
 
     const [shortcuts, setShortcuts] = useState<DesktopShortcutProps[]>([]);
@@ -196,7 +197,20 @@ const Desktop: React.FC<DesktopProps> = () => {
     );
 
     return !started ? (
-        <IntroPage onStart={()=> setStarted(true)} />
+        <div
+        style={{
+            opacity: fadingOut ? 0 : 1,
+            transition: 'opacity 1s ease',
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'black', // Keep background consistent
+          }}>
+            <IntroPage onStart={()=> {
+                setFadingOut(true);
+                setTimeout(()=>setStarted(true), 1000);
+            }}/>
+        </div>
+
     ) : !shutdown ? (
         <div style={styles.desktop}>
             {/* For each window in windows, loop over and render  */}
