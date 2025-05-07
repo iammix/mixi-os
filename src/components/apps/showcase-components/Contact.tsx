@@ -3,7 +3,7 @@ import colors from '../../../constants/colors';
 import xIcon from '../../../assets/pictures/xIcon.png';
 import githubIcon from '../../../assets/pictures/github.png';
 import linkedInIcon from '../../../assets/pictures/linkedin.png';
-import CvDownload from "./CvDownload.tsx";
+// import CvDownload from "./CvDownload.tsx";
 import BackArrow from '../../general/BackArrow.tsx';
 
 interface ContactProps {}
@@ -233,7 +233,7 @@ const Contact: React.FC<ContactProps> = () => {
                     </div>
                 </div>
             </div>
-            <CvDownload altText='Need a copy of me CV?!'/>
+            {/* <CvDownload altText='Need a copy of me CV?!'/> */}
         </div>
     );
 

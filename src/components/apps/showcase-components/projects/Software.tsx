@@ -5,7 +5,7 @@ import React from 'react';
 // import computer from '../../../assets/pictures/projects/software/computer.mp4';
 
 // import scroll from '../../../assets/pictures/projects/software/scroll.mp4';
-import CvDownload from '../CvDownload.tsx';
+// import CvDownload from '../CvDownload.tsx';
 import BackArrow from "../../../general/BackArrow.tsx";
 
 export interface SoftwareProjectsProps {}
@@ -22,7 +22,7 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
                 over the last few years.
             </p>
             <br />
-            <CvDownload />
+            {/* <CvDownload /> */}
             <br />
             <div className="text-block">
                 <h2>1. Personal Webpage</h2>
@@ -344,7 +344,7 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
                 </p>
             </div>
 
-            <CvDownload />
+            {/* <CvDownload /> */}
         </div>
     );
 };

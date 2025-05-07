@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import CvDownload from './CvDownload';
+// import CvDownload from './CvDownload';
 import me from '../../../assets/pictures/curme.jpg';
 import BackArrow from "../../general/BackArrow.tsx";
 
@@ -27,7 +27,7 @@ const About: React.FC<AboutProps> = () => {
                     I created this portfolio to share my work, insights, and projects. I hope you find it both engaging and informative! If you have any questions or just want to connect, feel free to reach out via the <Link to="/contact">contact form</Link> or email me at <a href="mailto:k.mixios@gmail.com">k.mixios@gmail.com</a>.
                 </p>
             </div>
-            <CvDownload />
+            {/* <CvDownload /> */}
             <div className="text-block">
                 <h3>About Me</h3>
                 <br />
