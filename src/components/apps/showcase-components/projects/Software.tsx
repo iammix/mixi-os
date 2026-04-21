@@ -330,7 +330,26 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
                     </li>
                 </ul>
 
-
+                <h2>14. Cycling Route Weather Calculator</h2>
+                <br />
+                <p>
+                The Cycling Route Weather Calculator is a web tool designed to calculate the weather conditions along a cycling route.
+                It provides cyclists with insights into the expected weather conditions for their planned routes (uploading GPX file), helping them prepare for their rides effectively.
+                </p>
+                <br />
+                <h3>Links:</h3>
+                <ul>
+                    <li>
+                        <a
+                            rel="noreferrer"
+                            target="_blank"
+                            href="https://cycling-route-weather-production.up.railway.app/">
+                                <p>
+                                    <b>[Web]</b> - Cycling Route Weather Calculator
+                                </p>
+                            </a>
+                    </li>
+                </ul>
 
                 <p>Beyond my own repositories, I am also an active open-source contributor in collaborative projects across research and industry. These include: 
                     <br/>
