@@ -364,7 +364,7 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
                         <a
                             rel="noreferrer"
                             target="_blank"
-                            href="romantic-wisdom-production-71ee.up.railway.app/">
+                            href="https://romantic-wisdom-production-71ee.up.railway.app/">
                                 <p>
                                     <b>[Web]</b> - Cycling Route Planner
                                 </p>
