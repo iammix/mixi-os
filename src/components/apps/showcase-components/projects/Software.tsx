@@ -351,6 +351,27 @@ const SoftwareProjects: React.FC<SoftwareProjectsProps> = () => {
                     </li>
                 </ul>
 
+                <h2>15. Cycling Route Planner</h2>
+                <br />
+                <p>
+                The Cycling Route Planner is a web tool designed to help cyclists plan their routes effectively.
+                It provides insights into the best routes based on various factors such as distance, elevation, and user preferences, ensuring a more enjoyable and efficient cycling experience.
+                </p>
+                <br />
+                <h3>Links:</h3>
+                <ul>
+                    <li>
+                        <a
+                            rel="noreferrer"
+                            target="_blank"
+                            href="romantic-wisdom-production-71ee.up.railway.app/">
+                                <p>
+                                    <b>[Web]</b> - Cycling Route Planner
+                                </p>
+                            </a>
+                    </li>
+                </ul>
+
                 <p>Beyond my own repositories, I am also an active open-source contributor in collaborative projects across research and industry. These include: 
                     <br/>
                      <a href="https://github.com/carla-simulator/carla">carla-simulator/carla</a>,
