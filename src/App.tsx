@@ -8,11 +8,14 @@ import { BrowserRouter } from 'react-router-dom'
 //import NavBar from './components/apps/showcase-components/NavBar';
 
 import Desktop from './components/os/Desktop';
+import RoomExperience from './components/room/RoomExperience';
 
 function App() {
     return (
         <BrowserRouter>
-            <Desktop/>
+            <RoomExperience>
+                <Desktop/>
+            </RoomExperience>
         </BrowserRouter>
     )
 }

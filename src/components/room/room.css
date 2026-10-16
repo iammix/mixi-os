@@ -1,0 +1,114 @@
+.room-root {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    /* Matches the Blender render: warm studio floor under the room, dusky blue above. */
+    background:
+        radial-gradient(ellipse 70% 55% at 50% 78%, #8d8273 0%, #5a554f 45%, rgba(40, 42, 48, 0) 100%),
+        linear-gradient(to bottom, #23262d 0%, #2e3036 55%, #4a4741 100%);
+}
+
+.room-canvas {
+    cursor: grab;
+    touch-action: none;
+}
+
+.room-loader,
+.room-hint {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 244, 230, 0.85);
+    font-family: Terminal, monospace;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    pointer-events: none;
+}
+
+.room-loader {
+    top: 50%;
+}
+
+.room-hint {
+    bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.room-hint.visible {
+    opacity: 1;
+}
+
+.room-hint-mouse {
+    width: 18px;
+    height: 28px;
+    border: 2px solid currentColor;
+    border-radius: 10px;
+    position: relative;
+}
+
+.room-hint-mouse::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 5px;
+    width: 2px;
+    height: 6px;
+    margin-left: -1px;
+    background: currentColor;
+    border-radius: 1px;
+    animation: room-hint-scroll 1.6s ease-in-out infinite;
+}
+
+@keyframes room-hint-scroll {
+    0% { transform: translateY(0); opacity: 1; }
+    70% { transform: translateY(8px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 0; }
+}
+
+.room-app {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    transform-origin: 0 0;
+    /* Shown once the camera rig has placed it on the monitor. */
+    visibility: hidden;
+    /* Clicks go to the room (to zoom in) until the camera has arrived. */
+    pointer-events: none;
+}
+
+.room-app.interactive {
+    pointer-events: auto;
+}
+
+/* Touch devices have no Esc key, so give them a way back to the room. */
+.room-exit {
+    display: none;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 100000;
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-family: Terminal, monospace;
+    font-size: 12px;
+}
+
+@media (pointer: coarse) {
+    .room-exit {
+        display: block;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .room-hint-mouse::after {
+        animation: none;
+    }
+}

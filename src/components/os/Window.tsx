@@ -6,6 +6,7 @@ import Icon from '../general/Icon';
 import Button from './Button';
 import DragIndicator from './DragIndicator';
 import ResizeIndicator from './ResizeIndicator';
+import { clientToScreen } from '../room/screenSpace';
 
 export interface WindowProps {
     children?: React.ReactNode;
@@ -72,7 +73,7 @@ const Window: React.FC<WindowProps> = (props) => {
     
 
     const onResize = (event : MouseEvent) => {
-        const { clientX, clientY } = event;
+        const { x: clientX, y: clientY } = clientToScreen(event.clientX, event.clientY);
         const curWidth = clientX - left;
         const curHeight = clientY - top;
         if (curWidth > 520) {
@@ -105,7 +106,7 @@ const Window: React.FC<WindowProps> = (props) => {
     };
 
     const startDrag = (event: any) => {
-        const { clientX, clientY } = event;
+        const { x: clientX, y: clientY } = clientToScreen(event.clientX, event.clientY);
         setIsDragging(true);
         event.preventDefault();
         dragProps.current = {
@@ -141,6 +142,7 @@ const Window: React.FC<WindowProps> = (props) => {
     ): { x: number; y: number } => {
         if (!dragProps.current) return { x: 0, y: 0 };
         const { dragStartX, dragStartY } = dragProps.current;
+        ({ x: clientX, y: clientY } = clientToScreen(clientX, clientY));
 
         const x = clientX - dragStartX + left;
         const y = clientY - dragStartY + top;
