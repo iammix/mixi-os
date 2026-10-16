@@ -12,7 +12,7 @@ import RoomExperience from './components/room/RoomExperience';
 
 function App() {
     return (
-        <BrowserRouter>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
             <RoomExperience>
                 <Desktop/>
             </RoomExperience>

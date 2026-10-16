@@ -5,8 +5,8 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { CoffeeSteam, RecordPlayerAndSpeakers } from './RoomAnimations';
 
-export const MODEL_URL = '/models/room.glb';
-const DRACO_URL = '/draco/';
+export const MODEL_URL = `${import.meta.env.BASE_URL}models/room.glb`;
+const DRACO_URL = `${import.meta.env.BASE_URL}draco/`;
 
 // Names of the Blender objects we rely on (GLTFLoader turns spaces into underscores).
 const HERO_CAMERA_NAME = 'Hero_isometric';
