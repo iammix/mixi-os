@@ -2,6 +2,7 @@ import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react
 import { Canvas } from '@react-three/fiber';
 import { useProgress } from '@react-three/drei';
 import * as THREE from 'three';
+import MusicToggle from './MusicToggle';
 import RoomScene from './RoomScene';
 import { registerScreenOverlay } from './screenSpace';
 import './room.css';
@@ -109,6 +110,8 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
             <div ref={screenOverlay} className={`room-app ${phase === 'app' ? 'interactive' : ''}`}>
                 {children}
             </div>
+
+            <MusicToggle />
 
             {phase === 'app' && (
                 <button className="room-exit" onClick={leave} aria-label="Back to the room">

@@ -2,12 +2,15 @@ import React, { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Billboard } from '@react-three/drei';
 import * as THREE from 'three';
+import { isMusicPlaying, musicProgress, musicTime } from './musicState';
 
 const RPM_33 = (33.333 * Math.PI * 2) / 60;
 const BPM = 92;
-const TONEARM_DELAY = 1.2;
-const TONEARM_CUE_TIME = 1.6;
-const SIDE_LENGTH = 240;
+// How quickly (per second) the platter spins up / coasts down, the arm swings and the speakers react.
+const SPIN_UP = 2.5;
+const SPIN_DOWN = 1.2;
+const TONEARM_SPEED = 3;
+const SPEAKER_SPEED = 6;
 const OUTER_GROOVE_RADIUS = 0.138;
 const INNER_GROOVE_RADIUS = 0.065;
 
@@ -141,54 +144,48 @@ function buildRig(scene: THREE.Object3D): Rig | null {
     return rig;
 }
 
-const smoothstep = (t: number) => t * t * (3 - 2 * t);
-
 export const RecordPlayerAndSpeakers: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
     const rig = useMemo(() => buildRig(scene), [scene]);
-    const startedAt = useRef<number | null>(null);
+    const motion = useRef({ spin: 0, arm: 0, level: 0 });
 
-    useFrame(({ clock }, delta) => {
+    useFrame(({ clock }, rawDelta) => {
         if (!rig) return;
-        const now = clock.getElapsedTime();
-        startedAt.current ??= now;
-        const t = now - startedAt.current;
+        const delta = Math.min(rawDelta, 0.1);
+        const t = clock.getElapsedTime();
+        const m = motion.current;
+        const playing = isMusicPlaying();
 
-        rig.record.rotation.y -= RPM_33 * Math.min(delta, 0.1);
+        // The platter spins up when the song starts and coasts to a stop when it's paused.
+        m.spin = THREE.MathUtils.damp(m.spin, playing ? 1 : 0, playing ? SPIN_UP : SPIN_DOWN, delta);
+        rig.record.rotation.y -= RPM_33 * m.spin * delta;
 
-        // Cue the arm onto the record, then let it track slowly inwards; loop when the side ends.
-        const sideTime = (t - TONEARM_DELAY) % (SIDE_LENGTH + TONEARM_CUE_TIME * 2);
-        let arm = 0;
-        let playing = 0;
-        if (t > TONEARM_DELAY) {
-            if (sideTime < TONEARM_CUE_TIME) {
-                arm = rig.tonearmOuter * smoothstep(sideTime / TONEARM_CUE_TIME);
-            } else if (sideTime < TONEARM_CUE_TIME + SIDE_LENGTH) {
-                const k = (sideTime - TONEARM_CUE_TIME) / SIDE_LENGTH;
-                arm = THREE.MathUtils.lerp(rig.tonearmOuter, rig.tonearmInner, k);
-                playing = Math.min(1, (sideTime - TONEARM_CUE_TIME) / 0.6);
-            } else {
-                const k = (sideTime - TONEARM_CUE_TIME - SIDE_LENGTH) / TONEARM_CUE_TIME;
-                arm = rig.tonearmInner * (1 - smoothstep(k));
-            }
-        }
+        // Cue the arm onto the record and track inwards with the song; lift it back to rest on pause.
+        const armGoal = playing ? THREE.MathUtils.lerp(rig.tonearmOuter, rig.tonearmInner, musicProgress()) : 0;
+        m.arm = THREE.MathUtils.damp(m.arm, armGoal, TONEARM_SPEED, delta);
+        // The speakers only kick in once the stylus has settled into the groove.
+        const onRecord = playing && Math.abs(m.arm - armGoal) < Math.abs(rig.tonearmOuter) * 0.05;
+        m.level = THREE.MathUtils.damp(m.level, onRecord ? 1 : 0, SPEAKER_SPEED, delta);
+
         // A little wow-and-flutter wobble while the stylus rides the groove.
-        rig.tonearm.rotation.y = arm + playing * Math.sin(t * RPM_33) * 0.0015;
+        rig.tonearm.rotation.y = m.arm + m.level * Math.sin(t * RPM_33) * 0.0015;
 
-        const beat = (t * BPM) / 60;
+        // Keep the beat locked to the song so it freezes on pause and resumes in time.
+        const songTime = musicTime();
+        const beat = (songTime * BPM) / 60;
         const phase = beat % 1;
         const kick = Math.exp(-phase * 7) * (0.75 + 0.25 * Math.sin(beat * 0.5));
         const snare = Math.floor(beat) % 2 === 1 ? Math.exp(-Math.abs(phase - 0.02) * 10) * 0.5 : 0;
         rig.drivers.forEach(({ group, woofer }) => {
             const pulse = woofer
-                ? playing * kick
-                : playing * (snare + 0.25 * Math.abs(Math.sin(t * 37)) * Math.abs(Math.sin(t * 5.3)));
+                ? m.level * kick
+                : m.level * (snare + 0.25 * Math.abs(Math.sin(songTime * 37)) * Math.abs(Math.sin(songTime * 5.3)));
             group.scale.setScalar(1 + pulse * (woofer ? 0.16 : 0.12));
             group.position.z = group.userData.restZ ??= group.position.z;
             group.position.z += pulse * 0.006;
         });
         rig.speakers.forEach((speaker) => {
-            const bump = 1 + playing * kick * 0.018;
-            speaker.scale.set(bump, 1 + playing * kick * 0.025, bump);
+            const bump = 1 + m.level * kick * 0.018;
+            speaker.scale.set(bump, 1 + m.level * kick * 0.025, bump);
         });
     });
 

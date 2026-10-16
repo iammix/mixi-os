@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { OrthographicCamera, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
@@ -13,6 +13,12 @@ const HERO_CAMERA_NAME = 'Hero_isometric';
 const SCREEN_NAME = 'Monitor_display';
 const STUDIO_GROUND_NAME = 'Studio_ground';
 const SCREEN_CONTENT = /Code_editor_line|Editor_sidebar/;
+// Every part of the Merida Reacto (the "03 MERIDA REACTO" collection in the .blend) and its wall mount.
+const BIKE_PARTS =
+    /^(12_speed_cassette|Aero_fork_blade|Asymmetric_chain_stay|Bar_wrap_ridge|Bike_cradle_arm|Bike_mount_base|Bottom_bracket|Brake_hood|Brake_lever|Chain_lower|Chain_upper|Chainring|Clipless_pedal|Cockpit_stem|Crank_arm|Dropped_seat_stay|Front_700x28_tyre|Front_alloy_rim|Front_disc_rotor|Front_hub|Front_spoke|Handlebar_aero_tops|Jockey_wheel|REACTO_|Rear_700x28_tyre|Rear_alloy_rim|Rear_derailleur|Rear_disc_rotor|Rear_hub|Rear_spoke|Road_saddle|Rotor_spider|S-FLEX_aero_seatpost|Valve_stem|Wrapped_drop_bar)/;
+const BIKE_URL = 'https://www.strava.com/athletes/32111789';
+// A press that moves further than this is a drag to look around, not a click.
+const CLICK_TOLERANCE = 6;
 
 // Stand-ins for Blender shader nodes that glTF can't carry (see scripts/export_room.py).
 const MATERIAL_TWEAKS: [RegExp, (m: THREE.MeshStandardMaterial) => void][] = [
@@ -313,9 +319,36 @@ type RoomSceneProps = {
     onArrive: (zoomed: boolean) => void;
 };
 
+const isBikePart = (object: THREE.Object3D | null) => {
+    for (let o = object; o; o = o.parent) if (BIKE_PARTS.test(o.name)) return true;
+    return false;
+};
+
 const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive }) => {
     const { scene } = useGLTF(MODEL_URL, DRACO_URL);
     const { hero, screen, screenSize } = useRoomPoses(scene);
+    const canvas = useThree((s) => s.gl.domElement);
+
+    // The bike links to Strava while looking around the room.
+    const onBikeHover = useCallback(
+        (e: ThreeEvent<PointerEvent>) => {
+            // Only the nearest hit counts, not whatever is behind it.
+            e.stopPropagation();
+            canvas.style.cursor = !zoomed && isBikePart(e.object) ? 'pointer' : '';
+        },
+        [canvas, zoomed],
+    );
+    const onBikeLeave = useCallback(() => {
+        canvas.style.cursor = '';
+    }, [canvas]);
+    const onBikeClick = useCallback(
+        (e: ThreeEvent<MouseEvent>) => {
+            e.stopPropagation();
+            if (zoomed || e.delta > CLICK_TOLERANCE || !isBikePart(e.object)) return;
+            window.open(BIKE_URL, '_blank', 'noopener,noreferrer');
+        },
+        [zoomed],
+    );
 
     useEffect(() => {
         const shadowCatcher = new THREE.ShadowMaterial({ opacity: 0.35 });
@@ -345,7 +378,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive }
     return (
         <>
             <Lights />
-            <primitive object={scene} />
+            <primitive object={scene} onPointerMove={onBikeHover} onPointerOut={onBikeLeave} onClick={onBikeClick} />
             <RecordPlayerAndSpeakers scene={scene} />
             <CoffeeSteam scene={scene} />
             <CameraRig
