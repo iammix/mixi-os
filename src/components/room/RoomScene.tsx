@@ -3,6 +3,8 @@ import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { OrthographicCamera, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import AlbumCovers from './AlbumCovers';
+import Books from './Books';
 import { CoffeeSteam, RecordPlayerAndSpeakers } from './RoomAnimations';
 
 export const MODEL_URL = `${import.meta.env.BASE_URL}models/room.glb`;
@@ -381,6 +383,8 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive }
             <primitive object={scene} onPointerMove={onBikeHover} onPointerOut={onBikeLeave} onClick={onBikeClick} />
             <RecordPlayerAndSpeakers scene={scene} />
             <CoffeeSteam scene={scene} />
+            <Books scene={scene} />
+            <AlbumCovers scene={scene} />
             <CameraRig
                 zoomed={zoomed}
                 hero={hero}
