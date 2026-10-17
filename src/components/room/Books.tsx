@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
+import { ThreeEvent, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
 // Sizes in metres (width, thickness, depth); the stack is listed bottom to top.
@@ -15,6 +16,25 @@ type Book = {
 const HERO_CAMERA_NAME = 'Hero_isometric';
 const PAGES = '#efe6d2';
 const PIKETTY_RED = '#b3261e';
+const GILT = '#d8c08a';
+// A press that moves further than this is a drag to look around, not a click.
+const CLICK_TOLERANCE = 6;
+
+/** A cloth spine with the title and author stamped in gilt. */
+const clothSpine =
+    (cloth: string, title: string, author: string) => (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+        ctx.fillStyle = cloth;
+        ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = GILT;
+        ctx.fillRect(w * 0.04, h * 0.18, w * 0.006, h * 0.64);
+        ctx.fillRect(w * 0.954, h * 0.18, w * 0.006, h * 0.64);
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center';
+        ctx.font = `600 ${h * 0.36}px Georgia, serif`;
+        ctx.fillText(title, w * 0.42, h / 2);
+        ctx.font = `${h * 0.28}px Georgia, serif`;
+        ctx.fillText(author, w * 0.84, h / 2);
+    };
 
 const pikettyCover = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
     ctx.fillStyle = '#f6f2ea';
@@ -49,8 +69,20 @@ const pikettySpine = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
 };
 
 const STACK: Book[] = [
-    { size: [0.175, 0.03, 0.25], cloth: '#2f4a3a', turn: 0.12, offset: [0.006, -0.004] },
-    { size: [0.155, 0.026, 0.23], cloth: '#7a5a3c', turn: -0.18, offset: [-0.008, 0.006] },
+    {
+        size: [0.175, 0.03, 0.25],
+        cloth: '#2f4a3a',
+        turn: 0.12,
+        offset: [0.006, -0.004],
+        spine: clothSpine('#2f4a3a', 'IN SEARCH OF LOST TIME', 'PROUST'),
+    },
+    {
+        size: [0.155, 0.026, 0.23],
+        cloth: '#7a5a3c',
+        turn: -0.18,
+        offset: [-0.008, 0.006],
+        spine: clothSpine('#7a5a3c', 'THE RIGHT TO BE LAZY', 'LAFARGUE'),
+    },
     { size: [0.165, 0.052, 0.24], cloth: '#f6f2ea', turn: 0.32, offset: [0.004, 0.002], cover: pikettyCover, spine: pikettySpine },
 ];
 
@@ -81,7 +113,15 @@ const bookMaterials = (book: Book) => {
 };
 
 /** A stack of books on the side table by the lounge chair, resting on the record sleeve if it's there. */
-const Books: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
+type BooksProps = {
+    scene: THREE.Object3D;
+    /** Clicks only count while looking around the room, not while using the computer. */
+    zoomed: boolean;
+    onSelect: () => void;
+};
+
+const Books: React.FC<BooksProps> = ({ scene, zoomed, onSelect }) => {
+    const canvas = useThree((s) => s.gl.domElement);
     const base = useMemo(() => {
         const table = scene.getObjectByName('Side_table_oak_top');
         if (!table) return null;
@@ -111,10 +151,30 @@ const Books: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
         [books],
     );
 
+    const onHover = (e: ThreeEvent<PointerEvent>) => {
+        // Stop here so the room underneath doesn't reset the cursor.
+        e.stopPropagation();
+        canvas.style.cursor = zoomed ? '' : 'pointer';
+    };
+    const onLeave = () => {
+        canvas.style.cursor = '';
+    };
+    const onClick = (e: ThreeEvent<MouseEvent>) => {
+        e.stopPropagation();
+        if (zoomed || e.delta > CLICK_TOLERANCE) return;
+        onSelect();
+    };
+
     if (!base) return null;
     let y = base.position.y;
     return (
-        <group position={[base.position.x, 0, base.position.z]} rotation={[0, base.facing, 0]}>
+        <group
+            position={[base.position.x, 0, base.position.z]}
+            rotation={[0, base.facing, 0]}
+            onPointerMove={onHover}
+            onPointerOut={onLeave}
+            onClick={onClick}
+        >
             {books.map(({ book, materials }, i) => {
                 const [width, thickness, depth] = book.size;
                 const centreY = y + thickness / 2;

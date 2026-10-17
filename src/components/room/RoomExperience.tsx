@@ -2,6 +2,7 @@ import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react
 import { Canvas } from '@react-three/fiber';
 import { useProgress } from '@react-three/drei';
 import * as THREE from 'three';
+import BookShelf from './BookShelf';
 import MusicToggle from './MusicToggle';
 import RoomScene from './RoomScene';
 import { registerScreenOverlay } from './screenSpace';
@@ -24,6 +25,11 @@ type RoomExperienceProps = {
 
 const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
     const [phase, setPhase] = useState<Phase>('room');
+    const [booksOpen, setBooksOpen] = useState(false);
+    const openBooks = useCallback(() => setBooksOpen(true), []);
+    const closeBooks = useCallback(() => setBooksOpen(false), []);
+    const booksOpenRef = useRef(booksOpen);
+    booksOpenRef.current = booksOpen;
     const screenOverlay = useRef<HTMLDivElement>(null);
     useEffect(() => {
         registerScreenOverlay(screenOverlay.current);
@@ -52,7 +58,8 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
 
     useEffect(() => {
         const onWheel = (e: WheelEvent) => {
-            if (e.deltaY > 0) enter();
+            // Scrolling inside the book pop-up shouldn't zoom into the computer behind it.
+            if (e.deltaY > 0 && !booksOpenRef.current) enter();
         };
         const onKey = (e: KeyboardEvent) => {
             if (e.key === 'Escape') leave();
@@ -95,7 +102,7 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
                 gl={{ antialias: true, toneMapping: THREE.AgXToneMapping, toneMappingExposure: 1.1 }}
             >
                 <Suspense fallback={null}>
-                    <RoomScene zoomed={zoomed} screenOverlay={screenOverlay} onArrive={handleArrive} />
+                    <RoomScene zoomed={zoomed} screenOverlay={screenOverlay} onArrive={handleArrive} onBooksClick={openBooks} />
                 </Suspense>
             </Canvas>
 
@@ -112,6 +119,8 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
             </div>
 
             <MusicToggle />
+
+            {booksOpen && <BookShelf onClose={closeBooks} />}
 
             {phase === 'app' && (
                 <button className="room-exit" onClick={leave} aria-label="Back to the room">

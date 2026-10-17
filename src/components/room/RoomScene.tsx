@@ -319,6 +319,7 @@ type RoomSceneProps = {
     zoomed: boolean;
     screenOverlay: React.RefObject<HTMLDivElement>;
     onArrive: (zoomed: boolean) => void;
+    onBooksClick: () => void;
 };
 
 const isBikePart = (object: THREE.Object3D | null) => {
@@ -326,7 +327,7 @@ const isBikePart = (object: THREE.Object3D | null) => {
     return false;
 };
 
-const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive }) => {
+const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, onBooksClick }) => {
     const { scene } = useGLTF(MODEL_URL, DRACO_URL);
     const { hero, screen, screenSize } = useRoomPoses(scene);
     const canvas = useThree((s) => s.gl.domElement);
@@ -383,7 +384,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive }
             <primitive object={scene} onPointerMove={onBikeHover} onPointerOut={onBikeLeave} onClick={onBikeClick} />
             <RecordPlayerAndSpeakers scene={scene} />
             <CoffeeSteam scene={scene} />
-            <Books scene={scene} />
+            <Books scene={scene} zoomed={zoomed} onSelect={onBooksClick} />
             <AlbumCovers scene={scene} />
             <CameraRig
                 zoomed={zoomed}
