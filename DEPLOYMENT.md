@@ -2,6 +2,10 @@
 
 The `mixi-os` Railway service deploys `iammix/mixi-os` from `main`.
 
+- Live app: https://mixi-os-production.up.railway.app
+- Railway project: https://railway.com/project/55aa310c-5165-4003-b702-02583dd6d2cc
+- CI runs: https://github.com/iammix/mixi-os/actions/workflows/ci.yml
+
 1. Push a commit to `main` (or merge a pull request).
 2. GitHub Actions runs `npm ci` and `npm run build -- --base=/` on Node.js 22.
 3. Railway's GitHub integration waits for CI to pass, builds the same commit,
