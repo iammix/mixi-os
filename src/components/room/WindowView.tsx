@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { applyWeather, lookAt } from './skyLook';
+import { createPrecipitation } from './Precipitation';
+import { CENTER, PHI_RANGE, SKY_HIGH, SKY_LOW, SKY_R, STENCIL } from './viewGeometry';
 import { getWeather, startWeather, subscribeWeather } from './weather';
 import { VIEW_MASK, WINDOW_PLACES, WindowPlace, getWindowPlace, subscribeWindowPlace } from './windowState';
 
@@ -12,14 +14,6 @@ import { VIEW_MASK, WINDOW_PLACES, WindowPlace, getWindowPlace, subscribeWindowP
 // The sky and the light follow where the sun really is over that place right now (lit windows,
 // street lamps, the floodlit White Tower and stars at night), and now and then something passes: a
 // cyclist on the promenade and a sailboat in Thessaloniki, a water taxi crossing the Maas in Rotterdam.
-
-// The window in three's coordinates (Blender x, z, -y), and the rings the view is built on.
-const CENTER = new THREE.Vector2(-2.24, -0.85);
-const SKY_R = 3.15;
-const PHI_RANGE: [number, number] = [-12, 88];
-// Height of the sky's horizon and top as seen through the window.
-const SKY_LOW = 0.6;
-const SKY_HIGH = 1.35;
 
 /** Something that now and then goes by along one of the rings: name, radius, height, seconds. */
 /**
@@ -65,14 +59,6 @@ function sunPosition(date: Date, lat: number, lon: number) {
     return { elevation: elevation / rad, azimuth: ((azimuth / rad) % 360 + 360) % 360 };
 }
 
-const STENCIL = {
-    stencilWrite: true,
-    stencilRef: 1,
-    stencilFunc: THREE.EqualStencilFunc,
-    stencilFail: THREE.KeepStencilOp,
-    stencilZFail: THREE.KeepStencilOp,
-    stencilZPass: THREE.KeepStencilOp,
-};
 
 const skyMaterial = () =>
     new THREE.ShaderMaterial({
@@ -155,11 +141,13 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
         }).filter((m) => m.object);
         return { roots, mask, movers };
     }, [scene]);
-    const state = useRef<{ tinted: Tinted[]; sky: THREE.ShaderMaterial | null; lastUpdate: number; wind: number }>({
+    const state = useRef<{ tinted: Tinted[]; sky: THREE.ShaderMaterial | null; lastUpdate: number; wind: number; light: number; precipitation: ReturnType<typeof createPrecipitation> | null }>({
         tinted: [],
         sky: null,
         lastUpdate: -Infinity,
         wind: 0,
+        light: 1,
+        precipitation: null,
     });
 
     // The real weather in both places; re-light as soon as it changes.
@@ -214,15 +202,20 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
             mesh.castShadow = false;
             mesh.receiveShadow = false;
         }));
-        state.current = { tinted, sky, lastUpdate: -Infinity, wind: state.current.wind };
+        // Rain or snow, fewer drops on small screens.
+        const precipitation = createPrecipitation(window.innerWidth < 768 ? 1200 : 2400);
+        scene.add(precipitation.points);
+        state.current = { tinted, sky, lastUpdate: -Infinity, wind: state.current.wind, light: 1, precipitation };
         return () => {
             originals.forEach(([mesh, material]) => (mesh.material = material));
             maskMaterial.dispose();
             sky.dispose();
+            scene.remove(precipitation.points);
+            precipitation.dispose();
             tinted.forEach((t) => t.material.dispose());
-            state.current = { tinted: [], sky: null, lastUpdate: -Infinity, wind: 0 };
+            state.current = { tinted: [], sky: null, lastUpdate: -Infinity, wind: 0, light: 1, precipitation: null };
         };
-    }, [parts]);
+    }, [parts, scene]);
 
     // Home or Rotterdam; re-light straight away for the new place.
     useEffect(() => {
@@ -233,9 +226,11 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
         state.current.lastUpdate = -Infinity;
     }, [parts, place]);
 
-    useFrame(({ clock }, delta) => {
+    useFrame(({ clock, gl }, delta) => {
         const s = state.current;
         const now = clock.elapsedTime;
+        const weather = getWeather(getWindowPlace());
+        s.precipitation?.update(weather, now, gl.domElement.height, s.light);
         // Clouds drift, faster in the wind.
         if (s.sky) s.sky.uniforms.drift.value += delta * (0.02 + Math.min(s.wind, 60) / 45 * 0.08);
         // Light and sky: follow the sun, checked twice a minute.
@@ -251,6 +246,7 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
                 .lerp(new THREE.Color('#ffffff'), 0.45)
                 .multiplyScalar(look.light * 0.95 * (1 - 0.35 * weather.intensity));
             s.wind = weather.wind;
+            s.light = look.light;
             s.sky.uniforms.top.value.set(look.top);
             s.sky.uniforms.horizon.value.set(look.horizon);
             s.sky.uniforms.stars.value = look.stars;
@@ -280,8 +276,10 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
             }
             if (!('arc' in m)) return;
             const phi = THREE.MathUtils.degToRad(m.arc[0] + t * (m.arc[1] - m.arc[0]));
-            object.position.set(CENTER.x - m.r * Math.cos(phi), m.y, CENTER.y - m.r * Math.sin(phi));
-            object.rotation.set(0, Math.atan2(Math.cos(phi), Math.sin(phi)), 0);
+            // Boats rock on the water when it's windy.
+            const rock = weather.windy ? 1 : 0;
+            object.position.set(CENTER.x - m.r * Math.cos(phi), m.y + rock * 0.004 * Math.sin(now * 1.5 + m.offset), CENTER.y - m.r * Math.sin(phi));
+            object.rotation.set(0, Math.atan2(Math.cos(phi), Math.sin(phi)), rock * 0.06 * Math.sin(now * 2 + m.offset));
         });
     });
 
