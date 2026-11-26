@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { applyWeather, lookAt } from './skyLook';
 import { createPrecipitation } from './Precipitation';
+import { roomNow, sunPosition } from './sun';
 import { CENTER, PHI_RANGE, SKY_HIGH, SKY_LOW, SKY_R, STENCIL } from './viewGeometry';
 import { getWeather, startWeather, subscribeWeather } from './weather';
 import { VIEW_MASK, WINDOW_PLACES, WindowPlace, getWindowPlace, subscribeWindowPlace } from './windowState';
@@ -44,25 +45,6 @@ const NIGHT_GLOW: Record<string, [string, number]> = {
     'View bridge cable': ['#cfe2ff', 0.9],
     'View white tower': ['#ffcf8f', 0.55],
 };
-
-/** Sun elevation and azimuth (degrees; azimuth clockwise from north) for a place and time. */
-function sunPosition(date: Date, lat: number, lon: number) {
-    const rad = Math.PI / 180;
-    const d = date.getTime() / 86400000 - 10957.5; // days since J2000
-    const g = (357.529 + 0.98560028 * d) * rad;
-    const q = 280.459 + 0.98564736 * d;
-    const L = (q + 1.915 * Math.sin(g) + 0.02 * Math.sin(2 * g)) * rad;
-    const e = (23.439 - 0.00000036 * d) * rad;
-    const ra = Math.atan2(Math.cos(e) * Math.sin(L), Math.cos(L));
-    const dec = Math.asin(Math.sin(e) * Math.sin(L));
-    const gmst = (((18.697374558 + 24.06570982441908 * d) % 24) + 24) % 24;
-    const ha = (gmst * 15 + lon) * rad - ra;
-    const phi = lat * rad;
-    const elevation = Math.asin(Math.sin(phi) * Math.sin(dec) + Math.cos(phi) * Math.cos(dec) * Math.cos(ha));
-    const azimuth = Math.atan2(-Math.sin(ha), Math.tan(dec) * Math.cos(phi) - Math.sin(phi) * Math.cos(ha));
-    return { elevation: elevation / rad, azimuth: ((azimuth / rad) % 360 + 360) % 360 };
-}
-
 
 const skyMaterial = () =>
     new THREE.ShaderMaterial({
@@ -241,7 +223,7 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
         if (s.sky && now - s.lastUpdate > 30) {
             s.lastUpdate = now;
             const { lat, lon } = WINDOW_PLACES[getWindowPlace()];
-            const sun = sunPosition(new Date(), lat, lon);
+            const sun = sunPosition(roomNow(), lat, lon);
             const weather = getWeather(getWindowPlace());
             const look = applyWeather(lookAt(sun.elevation), weather);
             s.sky.uniforms.cloud.value = weather.cloud;
