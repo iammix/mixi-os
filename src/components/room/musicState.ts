@@ -33,6 +33,28 @@ export function musicProgress(): number {
     return duration > 0 ? Math.min(1, musicTime() / duration) : 0;
 }
 
+// --- Holding the music ---
+// While the drum pad plays a loop the room's music stops, and picks up again when the pad stops
+// (if it was playing). MusicToggle does the pausing and resuming.
+
+let held = false;
+const holdListeners = new Set<() => void>();
+
+export const isMusicHeld = () => held;
+
+export function holdMusic(hold: boolean) {
+    if (hold === held) return;
+    held = hold;
+    holdListeners.forEach((l) => l());
+}
+
+export function subscribeMusicHold(listener: () => void) {
+    holdListeners.add(listener);
+    return () => {
+        holdListeners.delete(listener);
+    };
+}
+
 // --- What's on the turntable ---
 
 export type NowPlaying = {

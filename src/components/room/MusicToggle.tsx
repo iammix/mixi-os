@@ -3,11 +3,14 @@ import {
     SWAP_SECONDS,
     albumOf,
     getNowPlaying,
+    isMusicHeld,
     playNext,
     registerMusicSource,
     secondsSinceSwap,
+    subscribeMusicHold,
     subscribeNowPlaying,
 } from './musicState';
+import { stopPad } from './padPlayer';
 import { needleDrop, needleEvent, needleLift, recordLands, setRecordVolume } from './recordSounds';
 import { RECORD_LANDS_AT } from './RoomAnimations';
 
@@ -121,6 +124,8 @@ const MusicToggle: React.FC = () => {
                         if (needle === 'drop') needleDrop();
                         else if (needle === 'lift') needleLift();
                         if (data !== YT.PlayerState.BUFFERING) settledState.current = data;
+                        // Putting the music back on while the drum pad plays stops the pad.
+                        if (isPlaying && isMusicHeld()) stopPad();
                         // On to the next song in the shuffle, changing the record if it's on another.
                         if (data === YT.PlayerState.ENDED) playNext();
                     },
@@ -168,6 +173,24 @@ const MusicToggle: React.FC = () => {
         // Only a new pick or the player becoming ready should (re)start playback.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [nowPlaying, ready]);
+
+    // The drum pad holds the music while it plays a loop: pause, then carry on afterwards if it was on.
+    const resumeAfterHold = useRef(false);
+    useEffect(
+        () =>
+            subscribeMusicHold(() => {
+                const p = player.current;
+                if (!p || typeof p.pauseVideo !== 'function') return;
+                if (isMusicHeld()) {
+                    resumeAfterHold.current = p.getPlayerState() === 1;
+                    if (resumeAfterHold.current) p.pauseVideo();
+                } else if (resumeAfterHold.current) {
+                    resumeAfterHold.current = false;
+                    p.playVideo();
+                }
+            }),
+        [],
+    );
 
     const toggle = () => {
         if (!player.current) return;
