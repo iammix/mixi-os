@@ -17,6 +17,7 @@ import { getRevealedRecord, isRackSleeve, rackAlbumOf, setRackHover } from './ra
 import TrainingBoard from './TrainingBoard';
 import { isTrainingBoard } from './training';
 import WallClock from './WallClock';
+import ChristmasLights from './ChristmasLights';
 import DrumPad from './DrumPad';
 import { isDrumPad } from './beats';
 
@@ -424,6 +425,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             <WallClock scene={scene} />
             <TrainingBoard scene={scene} />
             <DrumPad scene={scene} />
+            <ChristmasLights scene={scene} />
             <WindowView scene={scene} />
             <CameraRig
                 zoomed={zoomed}
