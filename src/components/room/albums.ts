@@ -1,4 +1,4 @@
-// Every album in the room: the framed sleeves on the wall and the loose records by the console.
+// Every album in the room: the records filed in the rack under the turntable and the loose ones by the console.
 // Tracklists from MusicBrainz (musicbrainz.org), cover art from the Cover Art Archive (coverartarchive.org),
 // audio from each album's official release on YouTube Music.
 /** `video` is the track's official audio on YouTube (from the album's YouTube Music release). */
@@ -11,10 +11,10 @@ export type Album = {
     year: string;
     cover: string;
     /**
-     * Where it is in the room: framed on the wall, out on the floor by the console, or (by default)
-     * filed in the record rack under the turntable. New records go in the rack.
+     * Where it is in the room: out on the floor by the console, or (by default) filed in the
+     * record rack under the turntable. New records go in the rack.
      */
-    place?: 'wall' | 'floor';
+    place?: 'floor';
     tracks: Track[];
 };
 
@@ -106,7 +106,6 @@ export const ALBUMS: Album[] = [
         artist: 'JAY-Z',
         year: '2001',
         cover: 'covers/blueprint.jpg',
-        place: 'wall',
         tracks: [
             { title: "The Ruler's Back", video: '35KDNqGEd7g' },
             { title: 'Takeover', video: '1YYO8O6pJps' },
@@ -131,7 +130,6 @@ export const ALBUMS: Album[] = [
         artist: 'Isaiah Rashad',
         year: '2026',
         cover: 'covers/its-been-awful.jpg',
-        place: 'wall',
         tracks: [
             { title: 'THE NEW SUBLIME', video: 'AxMsJt-Pmls' },
             { title: 'M.O.M.', video: 'WTDhp5qcKWk' },
@@ -157,7 +155,6 @@ export const ALBUMS: Album[] = [
         artist: 'Kendrick Lamar',
         year: '2017',
         cover: 'covers/damn.jpg',
-        place: 'wall',
         tracks: [
             { title: 'BLOOD.', video: 'jvDZEoEdjzo' },
             { title: 'DNA.', video: 'NLZRYQMLDW4' },
@@ -192,20 +189,34 @@ export const ALBUMS: Album[] = [
             { title: 'untitled 08 | 09.06.2014.', video: 'JXikcHwPolM' },
         ],
     },
+    {
+        id: 'free-6lack',
+        title: 'FREE 6LACK',
+        artist: '6LACK',
+        year: '2016',
+        cover: 'covers/free-6lack.jpg',
+        // Audio from 6LACK's official channel (6LACKVEVO): the lyric videos, or the official audio
+        // uploads where there are some.
+        tracks: [
+            { title: 'Never Know', video: 'RFNdfnGaRHw' },
+            { title: 'Rules', video: 'zr9XNgIeGlo' },
+            { title: 'PRBLMS', video: '34gO3e12M-M' },
+            { title: 'Free', video: 'zaGv5lKHEN0' },
+            { title: 'Learn Ya', video: 'plp_Boxth4s' },
+            { title: 'MTFU', video: 'UrbmUgp2wus' },
+            { title: 'Luving U', video: 'FbVK3Z0OUQY' },
+            { title: 'Gettin’ Old', video: '4RhYjDf9ahY' },
+            { title: 'Worst Luck', video: 'qNDpVifa2Ag' },
+            { title: 'Ex Calling', video: '984kLDJCBKY' },
+            { title: 'Alone / EA6', video: 'mAd19kj5SW0' },
+            { title: 'Glock Six', video: 'vaCzHAYqAag' },
+            { title: 'In Between (feat. BANKS)', video: 'pNYkS78k11w' },
+            { title: 'One Way (feat. T-Pain)', video: 'Gr6rBaFAOLI' },
+        ],
+    },
 ];
 
 /** The records filed in the rack under the turntable, in the order they were added. */
 export const RACK_ALBUMS = ALBUMS.filter((a) => !a.place);
 
 export const coverUrl = (album: Album) => `${import.meta.env.BASE_URL}${album.cover}`;
-
-// The framed sleeves on the wall above the record shelf, left to right (Blender names; GLTFLoader turns
-// spaces into underscores). `frame` is the modelled frame around each, which opens the same tracklist.
-export const FRAMED_COVERS = [
-    { mesh: 'Illmatic_framed_cover', frame: 'Framed_print_NAS', album: 'blueprint' },
-    { mesh: 'All_Eyez_On_Me_framed_cover', frame: 'Framed_print_2PAC', album: 'its-been-awful' },
-    { mesh: '36_Chambers_framed_cover', frame: 'Framed_print_WU-TANG', album: 'damn' },
-];
-
-/** The album a framed cover (or its frame) on the wall shows, if `name` is one of them. */
-export const framedAlbumFor = (name: string) => FRAMED_COVERS.find((c) => c.mesh === name || c.frame === name)?.album;

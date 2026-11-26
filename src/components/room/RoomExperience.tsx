@@ -6,6 +6,8 @@ import AlbumTracklist from './AlbumTracklist';
 import BookShelf from './BookShelf';
 import { getNowPlaying } from './musicState';
 import MusicToggle from './MusicToggle';
+import PaintingInfo from './PaintingInfo';
+import RaceCalendar from './RaceCalendar';
 import RoomScene from './RoomScene';
 import { registerScreenOverlay } from './screenSpace';
 import './room.css';
@@ -33,8 +35,13 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
     const [album, setAlbum] = useState<string | null>(null);
     const openAlbum = useCallback((albumId?: string) => setAlbum(albumId ?? getNowPlaying().albumId), []);
     const closeAlbum = useCallback(() => setAlbum(null), []);
+    const [painting, setPainting] = useState<string | null>(null);
+    const closePainting = useCallback(() => setPainting(null), []);
+    const [racesOpen, setRacesOpen] = useState(false);
+    const openRaces = useCallback(() => setRacesOpen(true), []);
+    const closeRaces = useCallback(() => setRacesOpen(false), []);
     const popupOpenRef = useRef(false);
-    popupOpenRef.current = booksOpen || album !== null;
+    popupOpenRef.current = booksOpen || album !== null || painting !== null || racesOpen;
     const screenOverlay = useRef<HTMLDivElement>(null);
     useEffect(() => {
         registerScreenOverlay(screenOverlay.current);
@@ -107,7 +114,15 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
                 gl={{ antialias: true, toneMapping: THREE.AgXToneMapping, toneMappingExposure: 1.1 }}
             >
                 <Suspense fallback={null}>
-                    <RoomScene zoomed={zoomed} screenOverlay={screenOverlay} onArrive={handleArrive} onBooksClick={openBooks} onAlbumClick={openAlbum} />
+                    <RoomScene
+                        zoomed={zoomed}
+                        screenOverlay={screenOverlay}
+                        onArrive={handleArrive}
+                        onBooksClick={openBooks}
+                        onAlbumClick={openAlbum}
+                        onPaintingClick={setPainting}
+                        onRacesClick={openRaces}
+                    />
                 </Suspense>
             </Canvas>
 
@@ -128,6 +143,10 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
             {booksOpen && <BookShelf onClose={closeBooks} />}
 
             {album && <AlbumTracklist albumId={album} onChange={setAlbum} onClose={closeAlbum} />}
+
+            {painting && <PaintingInfo paintingId={painting} onChange={setPainting} onClose={closePainting} />}
+
+            {racesOpen && <RaceCalendar onClose={closeRaces} />}
 
             {phase === 'app' && (
                 <button className="room-exit" onClick={leave} aria-label="Back to the room">

@@ -3,9 +3,9 @@ import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { OrthographicCamera, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import AlbumCovers from './AlbumCovers';
-import { framedAlbumFor } from './albums';
 import { getNowPlaying } from './musicState';
+import { paintingFor } from './paintings';
+import { opensRaceCalendar } from './races';
 import Books from './Books';
 import { CoffeeSteam, RecordPlayerAndSpeakers } from './RoomAnimations';
 import { getScreenSize, setScreenAspect } from './screenSpace';
@@ -21,9 +21,8 @@ const HERO_CAMERA_NAME = 'Hero_isometric';
 const SCREEN_NAME = 'Monitor_display';
 const STUDIO_GROUND_NAME = 'Studio_ground';
 const SCREEN_CONTENT = /Code_editor_line|Editor_sidebar/;
-// Every part of the Merida Reacto (the "03 MERIDA REACTO" collection in the .blend) and its wall mount.
-const BIKE_PARTS =
-    /^(12_speed_cassette|Aero_fork_blade|Asymmetric_chain_stay|Bar_wrap_ridge|Bike_cradle_arm|Bike_mount_base|Bottom_bracket|Brake_hood|Brake_lever|Chain_lower|Chain_upper|Chainring|Clipless_pedal|Cockpit_stem|Crank_arm|Dropped_seat_stay|Front_700x28_tyre|Front_alloy_rim|Front_disc_rotor|Front_hub|Front_spoke|Handlebar_aero_tops|Jockey_wheel|REACTO_|Rear_700x28_tyre|Rear_alloy_rim|Rear_derailleur|Rear_disc_rotor|Rear_hub|Rear_spoke|Road_saddle|Rotor_spider|S-FLEX_aero_seatpost|Valve_stem|Wrapped_drop_bar)/;
+// The Merida Reacto and its wall hanger are all parented to this empty (see scripts/build_reacto.py).
+const BIKE_ROOT = 'Merida_Reacto_bike';
 const BIKE_URL = 'https://www.strava.com/athletes/32111789';
 // A press that moves further than this is a drag to look around, not a click.
 const CLICK_TOLERANCE = 6;
@@ -335,16 +334,25 @@ type RoomSceneProps = {
     onBooksClick: () => void;
     /** An album was clicked; `undefined` means the shelf as a whole (opens on what's playing). */
     onAlbumClick: (albumId?: string) => void;
+    /** One of the paintings on the wall was clicked. */
+    onPaintingClick: (paintingId: string) => void;
+    /** The tri bag (or the goggles and cap on it) was clicked: open the race calendar. */
+    onRacesClick: () => void;
 };
 
-type Clickable = { kind: 'bike' } | { kind: 'album'; album?: string };
+type Clickable =
+    | { kind: 'bike' }
+    | { kind: 'album'; album?: string }
+    | { kind: 'painting'; painting: string }
+    | { kind: 'races' };
 
 /** What clicking this part of the room does, if anything. */
 const clickableFor = (object: THREE.Object3D | null): Clickable | null => {
     for (let o = object; o; o = o.parent) {
-        if (BIKE_PARTS.test(o.name)) return { kind: 'bike' };
-        const album = framedAlbumFor(o.name);
-        if (album) return { kind: 'album', album };
+        if (o.name === BIKE_ROOT) return { kind: 'bike' };
+        if (opensRaceCalendar(o.name)) return { kind: 'races' };
+        const painting = paintingFor(o.name);
+        if (painting) return { kind: 'painting', painting };
         // The records filed in the rack open their own tracklist; the other sleeves open the crate.
         const racked = rackAlbumOf(o);
         if (racked) return { kind: 'album', album: racked };
@@ -355,13 +363,14 @@ const clickableFor = (object: THREE.Object3D | null): Clickable | null => {
     return null;
 };
 
-const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, onBooksClick, onAlbumClick }) => {
+const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, onBooksClick, onAlbumClick, onPaintingClick, onRacesClick }) => {
     const { scene } = useGLTF(MODEL_URL, DRACO_URL);
     const { hero, screen, screenSize } = useRoomPoses(scene);
     useScreenAspect(screenSize);
     const canvas = useThree((s) => s.gl.domElement);
 
-    // While looking around the room, the bike links to Strava and the records open their tracklists.
+    // While looking around the room, the bike links to Strava, the records open their tracklists,
+    // the paintings open their stories and the tri bag unfolds the race calendar.
     const onRoomHover = useCallback(
         (e: ThreeEvent<PointerEvent>) => {
             // Only the nearest hit counts, not whatever is behind it.
@@ -383,8 +392,10 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             const target = clickableFor(e.object);
             if (target?.kind === 'bike') window.open(BIKE_URL, '_blank', 'noopener,noreferrer');
             else if (target?.kind === 'album') onAlbumClick(target.album);
+            else if (target?.kind === 'painting') onPaintingClick(target.painting);
+            else if (target?.kind === 'races') onRacesClick();
         },
-        [zoomed, onAlbumClick],
+        [zoomed, onAlbumClick, onPaintingClick, onRacesClick],
     );
 
     useEffect(() => {
@@ -419,7 +430,6 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             <RecordPlayerAndSpeakers scene={scene} />
             <CoffeeSteam scene={scene} />
             <Books scene={scene} zoomed={zoomed} onSelect={onBooksClick} />
-            <AlbumCovers scene={scene} />
             <Vinyls zoomed={zoomed} onSelect={onAlbumClick} />
             <RecordRack scene={scene} zoomed={zoomed} />
             <CameraRig

@@ -418,3 +418,389 @@
     border-top: 1px solid rgba(255, 255, 255, 0.15);
     margin-top: 8px;
 }
+
+/* Painting pop-up (shares the record pop-up's panel). */
+.room-books.room-painting {
+    width: min(480px, 100%);
+}
+
+.room-painting-image {
+    display: block;
+    width: 100%;
+    max-height: 220px;
+    margin: 14px 0 12px;
+    border-radius: 3px;
+    object-fit: cover;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.room-painting-original {
+    font-size: 14px;
+    opacity: 0.6;
+}
+
+.room-painting-body {
+    display: block;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    margin-top: 12px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 12.5px;
+    line-height: 1.55;
+}
+
+.room-painting-body h3 {
+    margin: 10px 0 4px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: normal;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.room-painting-body p {
+    margin: 0 0 8px;
+    font-family: inherit;
+    font-size: 12.5px;
+    line-height: 1.55;
+    opacity: 0.9;
+}
+
+.room-painting-link {
+    display: inline-block;
+    margin: 2px 0 6px;
+    color: #ffc78c;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+}
+
+/* Race calendar: a ruled notebook page squished into a ball that flies out of the tri bag and is
+   pulled open (simulated in RaceCalendar/paperSim), then handed over to this real page. */
+.race-sim {
+    position: absolute;
+    inset: 0;
+    display: block;
+    pointer-events: none;
+}
+
+.race-paper {
+    --race-w: min(440px, calc(100vw - 32px));
+    --race-h: min(600px, calc(100vh - 48px));
+    --race-line: 30px;
+    --race-ink: #1f2f6b;
+    --race-red: #b8322b;
+    position: relative;
+    display: block;
+    width: var(--race-w);
+    height: var(--race-h);
+    transform: rotate(-1deg);
+    /* Its own compositing layer, so the tilted 1px rules are smoothed instead of stair-stepped. */
+    will-change: transform;
+}
+
+.race-paper.race-reveal {
+    animation: race-reveal 0.26s ease both;
+}
+
+@keyframes race-reveal {
+    from { opacity: 0; }
+}
+
+/* Wrinkles left in the paper after it's been squished. */
+.race-wrinkles {
+    position: absolute;
+    inset: 0;
+    display: block;
+    pointer-events: none;
+    opacity: 0.45;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='440' height='600'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011 0.014' numOctaves='4' seed='5'/%3E%3CfeDiffuseLighting lighting-color='%23ffffff' surfaceScale='2.2'%3E%3CfeDistantLight azimuth='225' elevation='58'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23w)'/%3E%3C/svg%3E");
+    background-size: var(--race-w) var(--race-h);
+}
+
+/* The page itself: cream paper, blue rules every line, a red margin. */
+.race-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    display: block;
+    height: var(--race-h);
+    box-sizing: border-box;
+    padding: var(--race-line) 22px var(--race-line) 62px;
+    background-color: #fbf7ea;
+    background-image:
+        linear-gradient(to right, transparent 46px, rgba(200, 60, 60, 0.45) 46px, rgba(200, 60, 60, 0.45) 48px, transparent 48px),
+        repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--race-line) - 1px), rgba(70, 110, 180, 0.33) calc(var(--race-line) - 1px), rgba(70, 110, 180, 0.33) var(--race-line));
+    background-attachment: local;
+    color: var(--race-ink);
+    font-family: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive;
+    font-size: 23px;
+    line-height: var(--race-line);
+    text-align: left;
+}
+
+.race-sheet-open {
+    outline: none;
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+    border-radius: 3px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.race-close {
+    position: absolute;
+    top: 4px;
+    right: 10px;
+    padding: 0 6px;
+    border: 0;
+    background: transparent;
+    color: var(--race-red);
+    font: inherit;
+    font-size: 30px;
+    line-height: var(--race-line);
+    cursor: pointer;
+}
+
+.race-sheet h2,
+.race-sheet p,
+.race-sheet ol,
+.race-sheet li {
+    display: block;
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    line-height: var(--race-line);
+}
+
+.race-sheet .race-title {
+    height: calc(2 * var(--race-line));
+    line-height: calc(2 * var(--race-line));
+    font-size: 36px;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: var(--race-red);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+}
+
+.race-sheet .race-list {
+    list-style: none;
+}
+
+.race-row {
+    display: block;
+    width: 100%;
+    margin: 0 0 var(--race-line);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: var(--race-line);
+    text-align: left;
+}
+
+.race-row-link {
+    cursor: pointer;
+}
+
+.race-row-link:hover .race-name,
+.race-row-link:focus-visible .race-name {
+    text-decoration: underline wavy var(--race-red);
+}
+
+.race-row-link:focus-visible,
+.race-close:focus-visible,
+.race-return:focus-visible {
+    outline: 1px dashed var(--race-red);
+    outline-offset: 2px;
+}
+
+.race-box {
+    display: inline-block;
+    width: 26px;
+    margin-left: -30px;
+    color: var(--race-red);
+}
+
+.race-day {
+    display: inline;
+    font-weight: 700;
+}
+
+.race-day::after {
+    content: ' — ';
+}
+
+.race-name {
+    display: inline;
+}
+
+.race-name.done {
+    text-decoration: line-through;
+    text-decoration-color: rgba(184, 50, 43, 0.7);
+}
+
+.race-note {
+    display: block;
+    font-size: 19px;
+    opacity: 0.8;
+}
+
+.race-read {
+    color: var(--race-red);
+}
+
+.race-sheet .race-footnote {
+    font-size: 20px;
+    opacity: 0.6;
+}
+
+.race-post {
+    display: block;
+}
+
+.race-sheet .race-post p {
+    margin-bottom: var(--race-line);
+}
+
+.race-sheet .race-post .race-note {
+    margin-bottom: 0;
+}
+
+.race-sheet .race-result {
+    color: var(--race-red);
+    font-weight: 700;
+}
+
+.race-return {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--race-red);
+    font: inherit;
+    font-size: 19px;
+    line-height: var(--race-line);
+    cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .race-paper.race-reveal {
+        animation: none;
+    }
+}
+
+/* A race story's route, sketched in red pen from its GPX. */
+.race-route {
+    display: block;
+    margin: 0 0 var(--race-line);
+}
+
+.race-route svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.race-route-line {
+    fill: none;
+    stroke: var(--race-red);
+    stroke-width: 2.2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.race-route-dot {
+    fill: var(--race-ink);
+}
+
+.race-route text {
+    fill: var(--race-ink);
+    font-family: 'Caveat', 'Bradley Hand', cursive;
+    font-size: 17px;
+}
+
+.race-route .race-route-profile {
+    height: 46px;
+    margin-top: 4px;
+}
+
+.race-route-profile path {
+    fill: rgba(184, 50, 43, 0.12);
+    stroke: var(--race-red);
+    stroke-width: 1.2;
+    vector-effect: non-scaling-stroke;
+}
+
+.race-route figcaption {
+    display: block;
+    font-size: 18px;
+    line-height: var(--race-line);
+    opacity: 0.85;
+}
+
+.race-route a,
+.race-photo a {
+    color: var(--race-red);
+}
+
+/* Photos taped onto the page like prints. */
+.race-photo {
+    position: relative;
+    display: block;
+    width: 86%;
+    margin: 18px auto calc(var(--race-line) + 4px);
+    padding: 7px 7px 4px;
+    background: #fff;
+    box-shadow: 0 6px 16px rgba(40, 30, 10, 0.28);
+}
+
+.race-photo.tilt-left {
+    transform: rotate(-2.2deg);
+}
+
+.race-photo.tilt-right {
+    transform: rotate(1.8deg);
+}
+
+/* A strip of tape holding it on. */
+.race-photo::before {
+    content: '';
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    width: 84px;
+    height: 22px;
+    margin-left: -42px;
+    background: rgba(235, 225, 190, 0.75);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    transform: rotate(-3deg);
+}
+
+.race-photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.race-photo figcaption {
+    display: block;
+    padding-top: 2px;
+    font-size: 20px;
+    line-height: 28px;
+    text-align: center;
+}
+
+/* A story's title can be long: let it wrap onto as many ruled lines as it needs. */
+.race-sheet .race-post .race-title {
+    height: auto;
+    padding: calc(var(--race-line) / 2) 0;
+    font-size: 32px;
+    line-height: var(--race-line);
+}
