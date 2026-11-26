@@ -14,6 +14,10 @@ import { VIEW_MASK, WINDOW_PLACES, WindowPlace, getWindowPlace, subscribeWindowP
 // The sky and the light follow where the sun really is over that place right now (lit windows,
 // street lamps, the floodlit White Tower and stars at night), and now and then something passes: a
 // cyclist on the promenade and a sailboat in Thessaloniki, a water taxi crossing the Maas in Rotterdam.
+//
+// The weather is real too (weather.ts, from Open-Meteo): clouds drift across the sky and grey and
+// dim the view, rain or snow falls (Precipitation.ts), and wind slants it, speeds up the clouds and
+// rocks the boats. Add ?weather=rain,windy (or sunny, cloudy, snow) to the address to try one.
 
 /** Something that now and then goes by along one of the rings: name, radius, height, seconds. */
 /**
