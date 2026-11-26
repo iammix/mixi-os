@@ -3,13 +3,13 @@ import {
     SWAP_SECONDS,
     albumOf,
     getNowPlaying,
-    playTrack,
+    playNext,
     registerMusicSource,
     secondsSinceSwap,
     subscribeNowPlaying,
 } from './musicState';
 
-// The audio for whatever track is on the turntable (see albums.ts); it starts on Isaiah Rashad - SAME SH!T.
+// The audio for whatever track is on the turntable (see albums.ts), played in shuffle (see musicState).
 const VOLUME = 60;
 // Start the new song this far before the record change finishes, so the arm drops as it begins.
 const CUE_LEAD = 0.3;
@@ -110,11 +110,8 @@ const MusicToggle: React.FC = () => {
                         const isPlaying = data === YT.PlayerState.PLAYING;
                         if (isPlaying) stopWaiting();
                         setPlaying(isPlaying);
-                        // Like a record, carry on to the next track (and round to the start again).
-                        if (data === YT.PlayerState.ENDED) {
-                            const now = getNowPlaying();
-                            playTrack(now.albumId, (now.track + 1) % albumOf(now).tracks.length);
-                        }
+                        // On to the next song in the shuffle, changing the record if it's on another.
+                        if (data === YT.PlayerState.ENDED) playNext();
                     },
                 },
             });
