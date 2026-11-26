@@ -3,6 +3,8 @@
 // Add a race with its day; once it's done, add a `post` and it becomes clickable, opening
 // a one-page write-up of how it went (races with a post are clickable whatever the date; the tick
 // and crossing-out come with the date). Races are listed in date order automatically.
+// The day after a race, its medal appears on the hanger above the tri bag (see Medals). Add
+// `medal: { photo, ribbon }` to use a photo of the real medal and its ribbon colour.
 
 export type RacePhoto = {
     /** Path under public/, e.g. "races/<race>/finish.jpg". */
@@ -31,6 +33,13 @@ export type RacePost = {
     route?: RaceRoute;
 };
 
+export type RaceMedal = {
+    /** A photo of the real medal's face under public/, cropped square, e.g. "races/<race>/medal.jpg". */
+    photo?: string;
+    /** The ribbon's colour, e.g. "#c8102e". */
+    ribbon?: string;
+};
+
 export type Race = {
     id: string;
     name: string;
@@ -40,6 +49,7 @@ export type Race = {
     /** The format, e.g. "Standard duathlon", "Olympic triathlon", "70.3". */
     kind: string;
     post?: RacePost;
+    medal?: RaceMedal;
 };
 
 export const RACES: Race[] = [
