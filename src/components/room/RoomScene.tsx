@@ -15,6 +15,7 @@ import RecordRack from './RecordRack';
 import Vinyls from './Vinyls';
 import { getRevealedRecord, isRackSleeve, rackAlbumOf, setRackHover } from './rackState';
 import MedalHanger from './MedalHanger';
+import WallClock from './WallClock';
 import { medalRaceIdOf, setMedalHover } from './medalState';
 
 export const MODEL_URL = `${import.meta.env.BASE_URL}models/room.glb`;
@@ -461,6 +462,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             <Vinyls zoomed={zoomed} onSelect={onAlbumClick} />
             <RecordRack scene={scene} zoomed={zoomed} />
             <MedalHanger scene={scene} zoomed={zoomed} />
+            <WallClock scene={scene} />
             <WindowView scene={scene} />
             <CameraRig
                 zoomed={zoomed}
