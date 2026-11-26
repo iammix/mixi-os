@@ -14,6 +14,8 @@ import { getScreenSize, setScreenAspect } from './screenSpace';
 import RecordRack from './RecordRack';
 import Vinyls from './Vinyls';
 import { getRevealedRecord, isRackSleeve, rackAlbumOf, setRackHover } from './rackState';
+import MedalHanger from './MedalHanger';
+import { medalRaceIdOf, setMedalHover } from './medalState';
 
 export const MODEL_URL = `${import.meta.env.BASE_URL}models/room.glb`;
 const DRACO_URL = `${import.meta.env.BASE_URL}draco/`;
@@ -391,12 +393,15 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             canvas.style.cursor = !zoomed && clickableFor(e.object) ? 'pointer' : '';
             // Pointing at the record rack slides its sleeves out (see RecordRack).
             setRackHover(!zoomed && isRackSleeve(e.object) ? e.object : null);
+            // Pointing at a medal sets it swinging (see MedalHanger).
+            setMedalHover(!zoomed ? medalRaceIdOf(e.object) : null);
         },
         [canvas, zoomed],
     );
     const onRoomLeave = useCallback(() => {
         canvas.style.cursor = '';
         setRackHover(null);
+        setMedalHover(null);
     }, [canvas]);
     const onRoomClick = useCallback(
         (e: ThreeEvent<MouseEvent>) => {
@@ -448,6 +453,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             <Books scene={scene} zoomed={zoomed} onSelect={onBooksClick} />
             <Vinyls zoomed={zoomed} onSelect={onAlbumClick} />
             <RecordRack scene={scene} zoomed={zoomed} />
+            <MedalHanger scene={scene} zoomed={zoomed} />
             <WindowView scene={scene} />
             <CameraRig
                 zoomed={zoomed}

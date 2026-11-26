@@ -1,6 +1,6 @@
 import { Race, isDone } from './races';
 
-// The medals on the SWIM · BIKE · RUN hanger above the tri bag (see Medals): one for every race
+// The medals on the SWIM · BIKE · RUN hanger above the tri bag (see MedalHanger): one for every race
 // that's done, hung left to right in date order from the hooks modelled in Blender
 // (scripts/build_medal_hanger.py).
 

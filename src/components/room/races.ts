@@ -3,7 +3,7 @@
 // Add a race with its day; once it's done, add a `post` and it becomes clickable, opening
 // a one-page write-up of how it went (races with a post are clickable whatever the date; the tick
 // and crossing-out come with the date). Races are listed in date order automatically.
-// The day after a race, its medal appears on the hanger above the tri bag (see Medals). Add
+// The day after a race, its medal appears on the hanger above the tri bag (see MedalHanger). Add
 // `medal: { photo, ribbon }` to use a photo of the real medal and its ribbon colour.
 
 export type RacePhoto = {
