@@ -3,10 +3,10 @@
 
 export type WindowPlace = 'home' | 'rotterdam';
 
-export const WINDOW_PLACES: Record<WindowPlace, { name: string; note: string; root: string; lat: number; lon: number }> = {
+export const WINDOW_PLACES: Record<WindowPlace, { name: string; note: string; root: string; lat: number; lon: number; timeZone: string }> = {
     // Blender names after GLTFLoader turns spaces into underscores (see scripts/build_window_view.py).
-    rotterdam: { name: 'Rotterdam', note: 'where I live', root: 'Window_view_Rotterdam', lat: 51.92, lon: 4.48 },
-    home: { name: 'Thessaloniki', note: 'where I’m from', root: 'Window_view_Thessaloniki', lat: 40.63, lon: 22.94 },
+    rotterdam: { name: 'Rotterdam', note: 'where I live', root: 'Window_view_Rotterdam', lat: 51.92, lon: 4.48, timeZone: 'Europe/Amsterdam' },
+    home: { name: 'Thessaloniki', note: 'where I’m from', root: 'Window_view_Thessaloniki', lat: 40.63, lon: 22.94, timeZone: 'Europe/Athens' },
 };
 
 // Rotterdam is outside first; a click switches to Thessaloniki.

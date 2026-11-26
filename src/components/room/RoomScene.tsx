@@ -14,6 +14,7 @@ import { getScreenSize, setScreenAspect } from './screenSpace';
 import RecordRack from './RecordRack';
 import Vinyls from './Vinyls';
 import { getRevealedRecord, isRackSleeve, rackAlbumOf, setRackHover } from './rackState';
+import WallClock from './WallClock';
 
 export const MODEL_URL = `${import.meta.env.BASE_URL}models/room.glb`;
 const DRACO_URL = `${import.meta.env.BASE_URL}draco/`;
@@ -448,6 +449,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             <Books scene={scene} zoomed={zoomed} onSelect={onBooksClick} />
             <Vinyls zoomed={zoomed} onSelect={onAlbumClick} />
             <RecordRack scene={scene} zoomed={zoomed} />
+            <WallClock scene={scene} />
             <WindowView scene={scene} />
             <CameraRig
                 zoomed={zoomed}
