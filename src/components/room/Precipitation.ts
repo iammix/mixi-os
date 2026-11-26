@@ -85,6 +85,9 @@ export function createPrecipitation(count: number) {
     points.frustumCulled = false;
     points.renderOrder = 3;
     points.visible = false;
+    // Never a target for pointer clicks or hover: raycasting ignores visibility, and every point
+    // sits at the origin in `position`, so it would swallow clicks meant for the room.
+    points.raycast = () => {};
 
     return {
         points,
