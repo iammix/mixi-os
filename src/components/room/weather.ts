@@ -2,6 +2,8 @@
 // needed). WindowView reads it to draw clouds, rain, snow and wind. `?weather=rain,windy` (any of
 // sunny, cloudy, rain, snow, windy) forces a weather for both places, for trying them out.
 
+import { WINDOW_PLACES, WindowPlace } from './windowState';
+
 export type Sky = 'sunny' | 'cloudy' | 'rain' | 'snow';
 
 /** intensity and cloud are 0..1, wind is km/h. */
@@ -56,4 +58,65 @@ export function parseOverride(search: string): Weather | null {
         else if (t === 'windy') set({ windy: true, wind: 45 });
     }
     return weather;
+}
+
+// The weather in each place, kept up to date while something has called startWeather.
+export const REFRESH_MS = 15 * 60 * 1000;
+
+const weather: Record<WindowPlace, Weather> = { home: CLEAR, rotterdam: CLEAR };
+const listeners = new Set<() => void>();
+let running: { count: number; stop: () => void } | null = null;
+
+export const getWeather = (place: WindowPlace) => weather[place];
+
+export function subscribeWeather(listener: () => void) {
+    listeners.add(listener);
+    return () => {
+        listeners.delete(listener);
+    };
+}
+
+function set(place: WindowPlace, w: Weather) {
+    weather[place] = w;
+    listeners.forEach((l) => l());
+}
+
+async function load(place: WindowPlace, fetcher: typeof fetch) {
+    const { lat, lon } = WINDOW_PLACES[place];
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=weather_code,cloud_cover,wind_speed_10m`;
+    try {
+        const res = await fetcher(url);
+        if (!res.ok) return;
+        set(place, fromOpenMeteo(await res.json()));
+    } catch {
+        // Offline or the service is down: keep what we had and try again next time.
+    }
+}
+
+/** Start keeping the weather up to date (or apply `?weather=`); returns a function that stops it. */
+export function startWeather(opts: { fetch?: typeof fetch; search?: string } = {}): () => void {
+    if (!running) {
+        const places = Object.keys(WINDOW_PLACES) as WindowPlace[];
+        const override = parseOverride(opts.search ?? (typeof location !== 'undefined' ? location.search : ''));
+        if (override) {
+            places.forEach((p) => set(p, override));
+            running = { count: 0, stop: () => {} };
+        } else {
+            const fetcher = opts.fetch ?? fetch.bind(globalThis);
+            const refresh = () => places.forEach((p) => void load(p, fetcher));
+            refresh();
+            const timer = setInterval(refresh, REFRESH_MS);
+            running = { count: 0, stop: () => clearInterval(timer) };
+        }
+    }
+    running.count++;
+    let stopped = false;
+    return () => {
+        if (stopped || !running) return;
+        stopped = true;
+        if (--running.count === 0) {
+            running.stop();
+            running = null;
+        }
+    };
 }
