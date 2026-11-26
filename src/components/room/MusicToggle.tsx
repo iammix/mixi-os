@@ -8,6 +8,8 @@ import {
     secondsSinceSwap,
     subscribeNowPlaying,
 } from './musicState';
+import { needleDrop, needleEvent, needleLift, recordLands, setRecordVolume } from './recordSounds';
+import { RECORD_LANDS_AT } from './RoomAnimations';
 
 // The audio for whatever track is on the turntable (see albums.ts), played in shuffle (see musicState).
 const VOLUME = 60;
@@ -39,7 +41,7 @@ type YTNamespace = {
             };
         },
     ) => YTPlayer;
-    PlayerState: { PLAYING: number; PAUSED: number; ENDED: number };
+    PlayerState: { PLAYING: number; PAUSED: number; ENDED: number; BUFFERING: number };
 };
 
 declare global {
@@ -78,6 +80,8 @@ const MusicToggle: React.FC = () => {
     const [swapping, setSwapping] = useState(false);
     /** The video the player has loaded, so picking it again resumes rather than restarts. */
     const loadedVideo = useRef<string | null>(null);
+    /** The player's last state other than buffering, to tell when the needle drops or lifts. */
+    const settledState = useRef<number | null>(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -87,7 +91,8 @@ const MusicToggle: React.FC = () => {
         const onGesture = (e: Event) => {
             // The music button toggles playback itself.
             if (button.current?.contains(e.target as Node)) return stopWaiting();
-            player.current?.playVideo();
+            // Until the player is ready it has no methods yet; it starts by itself once it is.
+            if (typeof player.current?.playVideo === 'function') player.current.playVideo();
         };
         GESTURES.forEach((g) => window.addEventListener(g, onGesture, true));
 
@@ -102,6 +107,7 @@ const MusicToggle: React.FC = () => {
                 events: {
                     onReady: () => {
                         player.current?.setVolume(VOLUME);
+                        setRecordVolume(VOLUME / 100);
                         registerMusicSource(player.current);
                         // Starts playing (or cues whatever was picked meanwhile) via the effect below.
                         setReady(true);
@@ -110,6 +116,11 @@ const MusicToggle: React.FC = () => {
                         const isPlaying = data === YT.PlayerState.PLAYING;
                         if (isPlaying) stopWaiting();
                         setPlaying(isPlaying);
+                        // The needle drops as the music starts and lifts as it stops (recordSounds).
+                        const needle = needleEvent(settledState.current, data);
+                        if (needle === 'drop') needleDrop();
+                        else if (needle === 'lift') needleLift();
+                        if (data !== YT.PlayerState.BUFFERING) settledState.current = data;
                         // On to the next song in the shuffle, changing the record if it's on another.
                         if (data === YT.PlayerState.ENDED) playNext();
                     },
@@ -147,7 +158,13 @@ const MusicToggle: React.FC = () => {
         setSwapping(true);
         p.pauseVideo();
         const timer = window.setTimeout(start, remaining * 1000);
-        return () => window.clearTimeout(timer);
+        // The thud of the new record settling onto the platter, in step with the animation.
+        const landing = RECORD_LANDS_AT - secondsSinceSwap();
+        const landed = landing > 0 ? window.setTimeout(recordLands, landing * 1000) : 0;
+        return () => {
+            window.clearTimeout(timer);
+            window.clearTimeout(landed);
+        };
         // Only a new pick or the player becoming ready should (re)start playback.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [nowPlaying, ready]);

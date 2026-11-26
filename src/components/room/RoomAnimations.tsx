@@ -28,6 +28,8 @@ const LIFT_TIME = 0.75;
 const LABEL_SWAP_AT = LIFT_START + LIFT_TIME;
 const DROP_START = 1.45;
 const DROP_TIME = 0.95;
+/** When the new record settles onto the platter (seconds into the change), for its sound. */
+export const RECORD_LANDS_AT = DROP_START + DROP_TIME * 0.72;
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
