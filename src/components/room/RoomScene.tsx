@@ -14,6 +14,8 @@ import { getScreenSize, setScreenAspect } from './screenSpace';
 import RecordRack from './RecordRack';
 import Vinyls from './Vinyls';
 import { getRevealedRecord, isRackSleeve, rackAlbumOf, setRackHover } from './rackState';
+import TrainingBoard from './TrainingBoard';
+import { isTrainingBoard } from './training';
 import WallClock from './WallClock';
 
 export const MODEL_URL = `${import.meta.env.BASE_URL}models/room.glb`;
@@ -349,6 +351,8 @@ type RoomSceneProps = {
     onPaintingClick: (paintingId: string) => void;
     /** The tri bag (or the goggles and cap on it) was clicked: open the race calendar. */
     onRacesClick: () => void;
+    /** The cork board above the bike was clicked: show it up close. */
+    onTrainingClick: () => void;
 };
 
 type Clickable =
@@ -356,6 +360,7 @@ type Clickable =
     | { kind: 'album'; album?: string }
     | { kind: 'painting'; painting: string }
     | { kind: 'races' }
+    | { kind: 'training' }
     | { kind: 'window' };
 
 /** What clicking this part of the room does, if anything. */
@@ -363,6 +368,7 @@ const clickableFor = (object: THREE.Object3D | null): Clickable | null => {
     for (let o = object; o; o = o.parent) {
         if (o.name === BIKE_ROOT) return { kind: 'bike' };
         if (opensRaceCalendar(o.name)) return { kind: 'races' };
+        if (isTrainingBoard(o.name)) return { kind: 'training' };
         if (isWindow(o.name)) return { kind: 'window' };
         const painting = paintingFor(o.name);
         if (painting) return { kind: 'painting', painting };
@@ -376,15 +382,15 @@ const clickableFor = (object: THREE.Object3D | null): Clickable | null => {
     return null;
 };
 
-const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, onBooksClick, onAlbumClick, onPaintingClick, onRacesClick }) => {
+const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, onBooksClick, onAlbumClick, onPaintingClick, onRacesClick, onTrainingClick }) => {
     const { scene } = useGLTF(MODEL_URL, DRACO_URL);
     const { hero, screen, screenSize } = useRoomPoses(scene);
     useScreenAspect(screenSize);
     const canvas = useThree((s) => s.gl.domElement);
 
     // While looking around the room, the bike links to Strava, the records open their tracklists,
-    // the paintings open their stories and the tri bag unfolds the race calendar
-    // and the window switches between home and Rotterdam.
+    // the paintings open their stories, the tri bag unfolds the race calendar, the cork board
+    // comes up close and the window switches between home and Rotterdam.
     const onRoomHover = useCallback(
         (e: ThreeEvent<PointerEvent>) => {
             // Only the nearest hit counts, not whatever is behind it.
@@ -408,9 +414,10 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             else if (target?.kind === 'album') onAlbumClick(target.album);
             else if (target?.kind === 'painting') onPaintingClick(target.painting);
             else if (target?.kind === 'races') onRacesClick();
+            else if (target?.kind === 'training') onTrainingClick();
             else if (target?.kind === 'window') toggleWindowPlace();
         },
-        [zoomed, onAlbumClick, onPaintingClick, onRacesClick],
+        [zoomed, onAlbumClick, onPaintingClick, onRacesClick, onTrainingClick],
     );
 
     useEffect(() => {
@@ -450,6 +457,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             <Vinyls zoomed={zoomed} onSelect={onAlbumClick} />
             <RecordRack scene={scene} zoomed={zoomed} />
             <WallClock scene={scene} />
+            <TrainingBoard scene={scene} />
             <WindowView scene={scene} />
             <CameraRig
                 zoomed={zoomed}

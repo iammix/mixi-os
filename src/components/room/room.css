@@ -829,3 +829,35 @@
     opacity: 1;
     transform: translate(-50%, 0);
 }
+
+/* The cork training board above the bike, up close (drawn by trainingBoardDraw). */
+.room-training {
+    position: relative;
+    width: min(960px, calc(100vw - 32px), calc((100vh - 48px) * 1.5));
+    animation: room-books-rise 0.3s ease;
+}
+
+.room-training-board {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    border: 14px solid #8a5a33;
+    border-radius: 4px;
+    box-sizing: border-box;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+.room-training-close {
+    position: absolute;
+    top: -34px;
+    right: 0;
+    color: #f4efe6;
+    font-family: Terminal, monospace;
+    background: rgba(12, 12, 14, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .room-training {
+        animation: none;
+    }
+}

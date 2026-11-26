@@ -45,8 +45,35 @@ export type NowPlaying = {
 /** How long changing the record takes, in seconds: arm off, old record out, new record on. */
 export const SWAP_SECONDS = 2.8;
 
-// The room starts on Isaiah Rashad - SAME SH!T.
-let nowPlaying: NowPlaying = { albumId: 'its-been-awful', track: 2, swapStartedAt: -Infinity };
+// --- Shuffle ---
+// The room plays every track on every record in a shuffled order, a different one each visit, and
+// only goes round again once it has played them all.
+
+export type TrackRef = { albumId: string; track: number };
+
+/** A shuffled copy of `items` (Fisher–Yates). */
+export function shuffled<T>(items: T[], random: () => number = Math.random): T[] {
+    const out = [...items];
+    for (let i = out.length - 1; i > 0; i--) {
+        const j = Math.floor(random() * (i + 1));
+        [out[i], out[j]] = [out[j], out[i]];
+    }
+    return out;
+}
+
+const allTracks = (): TrackRef[] => ALBUMS.flatMap((a) => a.tracks.map((_, track) => ({ albumId: a.id, track })));
+
+let queue: TrackRef[] = shuffled(allTracks());
+
+/** The next track in the shuffle, never the one that's playing; reshuffles once all have played. */
+function nextInShuffle(current: TrackRef): TrackRef {
+    const same = (t: TrackRef) => t.albumId === current.albumId && t.track === current.track;
+    queue = queue.filter((t) => !same(t));
+    if (queue.length === 0) queue = shuffled(allTracks().filter((t) => !same(t)));
+    return queue.shift() ?? current;
+}
+
+let nowPlaying: NowPlaying = { ...(queue.shift() ?? { albumId: ALBUMS[0].id, track: 0 }), swapStartedAt: -Infinity };
 const listeners = new Set<() => void>();
 
 export const getNowPlaying = () => nowPlaying;
@@ -73,3 +100,9 @@ export function secondsSinceSwap(): number {
 }
 
 export const isSwapping = () => secondsSinceSwap() < SWAP_SECONDS;
+
+/** A song has finished: play the next one in the shuffle (changing the record if need be). */
+export function playNext() {
+    const next = nextInShuffle(nowPlaying);
+    playTrack(next.albumId, next.track);
+}

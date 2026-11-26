@@ -1,0 +1,9 @@
+{
+  "name": "mixi-os-training-api",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node index.mjs"
+  }
+}

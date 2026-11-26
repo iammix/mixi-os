@@ -9,6 +9,7 @@ import MusicToggle from './MusicToggle';
 import PaintingInfo from './PaintingInfo';
 import RaceCalendar from './RaceCalendar';
 import RoomScene from './RoomScene';
+import TrainingBoardCloseUp from './TrainingBoardCloseUp';
 import { WINDOW_PLACES, getWindowPlace, subscribeWindowPlace } from './windowState';
 import { registerScreenOverlay } from './screenSpace';
 import './room.css';
@@ -41,6 +42,9 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
     const [racesOpen, setRacesOpen] = useState(false);
     const openRaces = useCallback(() => setRacesOpen(true), []);
     const closeRaces = useCallback(() => setRacesOpen(false), []);
+    const [trainingOpen, setTrainingOpen] = useState(false);
+    const openTraining = useCallback(() => setTrainingOpen(true), []);
+    const closeTraining = useCallback(() => setTrainingOpen(false), []);
     // A small note saying which view is outside the window, shown for a moment when it's switched.
     const [windowNote, setWindowNote] = useState<string | null>(null);
     useEffect(() => {
@@ -57,7 +61,7 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
         };
     }, []);
     const popupOpenRef = useRef(false);
-    popupOpenRef.current = booksOpen || album !== null || painting !== null || racesOpen;
+    popupOpenRef.current = booksOpen || album !== null || painting !== null || racesOpen || trainingOpen;
     const screenOverlay = useRef<HTMLDivElement>(null);
     useEffect(() => {
         registerScreenOverlay(screenOverlay.current);
@@ -138,6 +142,7 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
                         onAlbumClick={openAlbum}
                         onPaintingClick={setPainting}
                         onRacesClick={openRaces}
+                        onTrainingClick={openTraining}
                     />
                 </Suspense>
             </Canvas>
@@ -167,6 +172,8 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
             {painting && <PaintingInfo paintingId={painting} onChange={setPainting} onClose={closePainting} />}
 
             {racesOpen && <RaceCalendar onClose={closeRaces} />}
+
+            {trainingOpen && <TrainingBoardCloseUp onClose={closeTraining} />}
 
             {phase === 'app' && (
                 <button className="room-exit" onClick={leave} aria-label="Back to the room">
