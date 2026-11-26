@@ -11,7 +11,9 @@ import {
     subscribeNowPlaying,
 } from './musicState';
 import { stopPad } from './padPlayer';
-import { needleDrop, needleEvent, needleLift, recordLands, setRecordVolume } from './recordSounds';
+import { needleDrop, needleEvent, needleLift, quietNeedle, recordLands, scratchSound, setRecordVolume, startScratchSound, stopScratchSound } from './recordSounds';
+import { getPad } from './padPlayer';
+import { subscribeScratch } from './scratch';
 import { RECORD_LANDS_AT } from './RoomAnimations';
 
 // The audio for whatever track is on the turntable (see albums.ts), played in shuffle (see musicState).
@@ -28,6 +30,7 @@ type YTPlayer = {
     setVolume: (volume: number) => void;
     getPlayerState: () => number;
     getCurrentTime: () => number;
+    seekTo: (seconds: number, allowSeekAhead: boolean) => void;
     getDuration: () => number;
     destroy: () => void;
 };
@@ -85,6 +88,8 @@ const MusicToggle: React.FC = () => {
     const loadedVideo = useRef<string | null>(null);
     /** The player's last state other than buffering, to tell when the needle drops or lifts. */
     const settledState = useRef<number | null>(null);
+    /** Whether to put the music back on when the drum pad stops holding it. */
+    const resumeAfterHold = useRef(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -94,7 +99,9 @@ const MusicToggle: React.FC = () => {
         const onGesture = (e: Event) => {
             // The music button toggles playback itself.
             if (button.current?.contains(e.target as Node)) return stopWaiting();
-            // Until the player is ready it has no methods yet; it starts by itself once it is.
+            // Until the player is ready it has no methods yet; it starts by itself once it is. Not
+            // while the drum pad holds the music: it'll carry on when the pad stops.
+            if (isMusicHeld()) return;
             if (typeof player.current?.playVideo === 'function') player.current.playVideo();
         };
         GESTURES.forEach((g) => window.addEventListener(g, onGesture, true));
@@ -124,8 +131,12 @@ const MusicToggle: React.FC = () => {
                         if (needle === 'drop') needleDrop();
                         else if (needle === 'lift') needleLift();
                         if (data !== YT.PlayerState.BUFFERING) settledState.current = data;
-                        // Putting the music back on while the drum pad plays stops the pad.
-                        if (isPlaying && isMusicHeld()) stopPad();
+                        // The drum pad holds the music: if it starts anyway (autoplay kicking in, say),
+                        // pause it again and let it carry on once the pad stops.
+                        if (isPlaying && isMusicHeld()) {
+                            resumeAfterHold.current = true;
+                            player.current?.pauseVideo();
+                        }
                         // On to the next song in the shuffle, changing the record if it's on another.
                         if (data === YT.PlayerState.ENDED) playNext();
                     },
@@ -175,14 +186,14 @@ const MusicToggle: React.FC = () => {
     }, [nowPlaying, ready]);
 
     // The drum pad holds the music while it plays a loop: pause, then carry on afterwards if it was on.
-    const resumeAfterHold = useRef(false);
     useEffect(
         () =>
             subscribeMusicHold(() => {
                 const p = player.current;
                 if (!p || typeof p.pauseVideo !== 'function') return;
                 if (isMusicHeld()) {
-                    resumeAfterHold.current = p.getPlayerState() === 1;
+                    // Playing, or buffering on its way to playing.
+                    resumeAfterHold.current = [1, 3].includes(p.getPlayerState());
                     if (resumeAfterHold.current) p.pauseVideo();
                 } else if (resumeAfterHold.current) {
                     resumeAfterHold.current = false;
@@ -192,10 +203,46 @@ const MusicToggle: React.FC = () => {
         [],
     );
 
+    // Scratching the record while a song plays: the song can't be scratched for real (it's YouTube),
+    // so it pauses under a scratch sound and then carries on from as far on or back as the record
+    // was turned. (A drum pad loop is scratched for real: see padPlayer.)
+    useEffect(() => {
+        let wasPlaying = false;
+        return subscribeScratch((e) => {
+            if (getPad().playing) return;
+            const p = player.current;
+            const ready = p && typeof p.pauseVideo === 'function';
+            if (e.type === 'start') {
+                // Playing, or buffering on its way to playing (as right after a jump).
+                wasPlaying = !!ready && [1, 3].includes(p.getPlayerState());
+                if (wasPlaying) {
+                    quietNeedle(true);
+                    p!.pauseVideo();
+                }
+                startScratchSound();
+            } else if (e.type === 'move') {
+                scratchSound(e.speed);
+            } else {
+                stopScratchSound();
+                if (wasPlaying && ready) {
+                    p.seekTo(Math.max(0, p.getCurrentTime() + e.seconds), true);
+                    p.playVideo();
+                    // The needle never left the record: keep its sounds quiet until it's playing again.
+                    window.setTimeout(() => quietNeedle(false), 1500);
+                }
+                wasPlaying = false;
+            }
+        });
+    }, []);
+
     const toggle = () => {
         if (!player.current) return;
         if (playing) player.current.pauseVideo();
-        else player.current.playVideo();
+        else {
+            // Putting the music back on while the drum pad plays stops the pad (and lets the music go).
+            if (isMusicHeld()) stopPad();
+            player.current.playVideo();
+        }
     };
 
     return (
