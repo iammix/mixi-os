@@ -1,33 +1,52 @@
 import React, { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { ROTTERDAM_PHOTO, VIEW_MASK, VIEW_ROOT, getWindowPlace, subscribeWindowPlace } from './windowState';
+import { VIEW_MASK, WINDOW_PLACES, WindowPlace, getWindowPlace, subscribeWindowPlace } from './windowState';
 
-// The view of Nea Redestos outside the window (built by scripts/build_window_view.py).
+// The views outside the window, Thessaloniki and Rotterdam (built by scripts/build_window_view.py).
 //
-// It's a miniature diorama behind the wall, so it is drawn only where the window opening is seen:
-// the opening writes 1 into the stencil buffer and every part of the view only draws where it's 1.
-// The sky and the light on the village follow where the sun really is over Nea Redestos right now
-// (lit windows and stars at night), and now and then a cyclist rides along the valley road.
-
-const LAT = 40.48;
-const LON = 23.07;
+// Each is a miniature diorama behind the wall, so it's drawn only where the window opening is seen:
+// the opening writes 1 into the stencil buffer and every part of the views only draws where it's 1.
+// The sky and the light follow where the sun really is over that place right now (lit windows,
+// street lamps, the floodlit White Tower and stars at night), and now and then something passes: a
+// cyclist on the promenade and a sailboat in Thessaloniki, a water taxi crossing the Maas in Rotterdam.
 
 // The window in three's coordinates (Blender x, z, -y), and the rings the view is built on.
 const CENTER = new THREE.Vector2(-2.24, -0.85);
 const SKY_R = 3.15;
-const ROAD_R = 2.4;
-const ROAD_Y = 0.534;
 const PHI_RANGE: [number, number] = [-12, 88];
 // Height of the sky's horizon and top as seen through the window.
 const SKY_LOW = 0.6;
 const SKY_HIGH = 1.35;
 
-const RIDE_S = 48;
-const PAUSE_S = 30;
+/** Something that now and then goes by along one of the rings: name, radius, height, seconds. */
+/**
+ * Something that now and then goes by: either along one of the rings (radius, height and the arc
+ * of directions it covers) or in a straight line between two markers placed in Blender.
+ */
+type Mover = { name: string; travel: number; pause: number; offset: number } & (
+    | { r: number; y: number; arc: [number, number] }
+    | { from: string; to: string }
+);
+const MOVERS: Mover[] = [
+    // Along the Thessaloniki promenade.
+    { name: 'View_cyclist', from: 'View_cyclist_from', to: 'View_cyclist_to', travel: 40, pause: 26, offset: 0 },
+    // Out on the gulf, clear of the shore.
+    { name: 'View_sailboat', r: 2.2, y: 0.422, arc: [58, 88], travel: 60, pause: 30, offset: 20 },
+    // Across the Maas.
+    { name: 'View_water_taxi', r: 1.95, y: 0.422, arc: PHI_RANGE, travel: 26, pause: 22, offset: 9 },
+];
+
+// Materials that light up after dark: their light and how bright it gets.
+const NIGHT_GLOW: Record<string, [string, number]> = {
+    'View lit window': ['#ffb860', 2.6],
+    'View lamp glow': ['#ffcf8a', 3],
+    'View bridge cable': ['#cfe2ff', 0.9],
+    'View white tower': ['#ffcf8f', 0.55],
+};
 
 /** Sun elevation and azimuth (degrees; azimuth clockwise from north) for a place and time. */
-function sunPosition(date: Date, lat = LAT, lon = LON) {
+function sunPosition(date: Date, lat: number, lon: number) {
     const rad = Math.PI / 180;
     const d = date.getTime() / 86400000 - 10957.5; // days since J2000
     const g = (357.529 + 0.98560028 * d) * rad;
@@ -125,16 +144,24 @@ const skyMaterial = () =>
         `,
     });
 
-type Tinted = { material: THREE.MeshStandardMaterial; base: THREE.Color; window: boolean };
+type Tinted = { material: THREE.MeshStandardMaterial; base: THREE.Color; glow: number };
 
 const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
     const place = useSyncExternalStore(subscribeWindowPlace, getWindowPlace);
     const parts = useMemo(() => {
-        const root = scene.getObjectByName(VIEW_ROOT);
+        const roots = Object.fromEntries(
+            (Object.keys(WINDOW_PLACES) as WindowPlace[]).map((p) => [p, scene.getObjectByName(WINDOW_PLACES[p].root)]),
+        ) as Record<WindowPlace, THREE.Object3D | undefined>;
         const mask = scene.getObjectByName(VIEW_MASK) as THREE.Mesh | undefined;
-        const photo = scene.getObjectByName(ROTTERDAM_PHOTO);
-        const cyclist = scene.getObjectByName('View_cyclist');
-        return { root, mask, photo, cyclist };
+        const movers = MOVERS.map((m) => {
+            const object = scene.getObjectByName(m.name);
+            if (!object || !('from' in m)) return { ...m, object };
+            // Markers are siblings of the mover under the same root, so their positions are in its space.
+            const from = scene.getObjectByName(m.from)?.position.clone();
+            const to = scene.getObjectByName(m.to)?.position.clone();
+            return { ...m, object, line: from && to ? ([from, to] as const) : undefined };
+        }).filter((m) => m.object);
+        return { roots, mask, movers };
     }, [scene]);
     const state = useRef<{ tinted: Tinted[]; sky: THREE.ShaderMaterial | null; lastUpdate: number }>({
         tinted: [],
@@ -144,8 +171,8 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
 
     // Set up the stencil mask and give the view its own materials.
     useEffect(() => {
-        const { root, mask } = parts;
-        if (!root || !mask) return;
+        const { roots, mask } = parts;
+        if (!mask) return;
         const originals: [THREE.Mesh, THREE.Material | THREE.Material[]][] = [];
         const maskMaterial = new THREE.MeshBasicMaterial({
             colorWrite: false,
@@ -167,12 +194,15 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
             if (m.name === 'View sky') return sky;
             const copy = (m as THREE.MeshStandardMaterial).clone();
             Object.assign(copy, STENCIL);
-            const window = m.name === 'View lit window';
-            if (window) copy.emissive = new THREE.Color('#ffb860');
-            tinted.push({ material: copy, base: copy.color.clone(), window });
+            const [light, glow] = NIGHT_GLOW[m.name] ?? ['#000000', 0];
+            if (glow) {
+                copy.emissive = new THREE.Color(light);
+                copy.emissiveIntensity = 0;
+            }
+            tinted.push({ material: copy, base: copy.color.clone(), glow });
             return copy;
         };
-        root.traverse((o) => {
+        Object.values(roots).forEach((root) => root?.traverse((o) => {
             const mesh = o as THREE.Mesh;
             if (!mesh.isMesh) return;
             originals.push([mesh, mesh.material]);
@@ -180,7 +210,7 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
             mesh.renderOrder = 2;
             mesh.castShadow = false;
             mesh.receiveShadow = false;
-        });
+        }));
         state.current = { tinted, sky, lastUpdate: -Infinity };
         return () => {
             originals.forEach(([mesh, material]) => (mesh.material = material));
@@ -191,10 +221,13 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
         };
     }, [parts]);
 
-    // Home or Rotterdam.
+    // Home or Rotterdam; re-light straight away for the new place.
     useEffect(() => {
-        if (parts.root) parts.root.visible = place === 'home';
-        if (parts.photo) parts.photo.visible = place === 'rotterdam';
+        (Object.keys(parts.roots) as WindowPlace[]).forEach((p) => {
+            const root = parts.roots[p];
+            if (root) root.visible = p === place;
+        });
+        state.current.lastUpdate = -Infinity;
     }, [parts, place]);
 
     useFrame(({ clock }) => {
@@ -203,7 +236,8 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
         // Light and sky: follow the sun, checked twice a minute.
         if (s.sky && now - s.lastUpdate > 30) {
             s.lastUpdate = now;
-            const sun = sunPosition(new Date());
+            const { lat, lon } = WINDOW_PLACES[getWindowPlace()];
+            const sun = sunPosition(new Date(), lat, lon);
             const look = lookAt(sun.elevation);
             s.sky.uniforms.top.value.set(look.top);
             s.sky.uniforms.horizon.value.set(look.horizon);
@@ -214,22 +248,29 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
             const height = SKY_LOW + 0.04 + THREE.MathUtils.clamp(sun.elevation / 60, -0.2, 1) * (SKY_HIGH - SKY_LOW);
             s.sky.uniforms.sun.value.set(phi, height, sun.elevation > -2 ? 1 : 0);
             const tint = new THREE.Color(look.tint).multiplyScalar(look.light);
-            s.tinted.forEach(({ material, base, window }) => {
+            s.tinted.forEach(({ material, base, glow }) => {
                 material.color.copy(base).multiply(tint);
-                if (window) material.emissiveIntensity = look.windows * 2.6;
+                if (glow) material.emissiveIntensity = look.windows * glow;
             });
         }
-        // The cyclist rides along the valley road, then waits a while before the next one.
-        const cyclist = parts.cyclist;
-        if (cyclist) {
-            const t = (now % (RIDE_S + PAUSE_S)) / RIDE_S;
-            cyclist.visible = t <= 1;
-            if (t <= 1) {
-                const phi = THREE.MathUtils.degToRad(PHI_RANGE[0] + t * (PHI_RANGE[1] - PHI_RANGE[0]));
-                cyclist.position.set(CENTER.x - ROAD_R * Math.cos(phi), ROAD_Y, CENTER.y - ROAD_R * Math.sin(phi));
-                cyclist.rotation.set(0, Math.atan2(Math.cos(phi), Math.sin(phi)), 0);
+        // A cyclist on the valley road, a water taxi on the river: each goes by, then waits a while.
+        parts.movers.forEach((m) => {
+            const object = m.object!;
+            const t = ((now + m.offset) % (m.travel + m.pause)) / m.travel;
+            object.visible = t <= 1;
+            if (t > 1) return;
+            if ('line' in m) {
+                if (!m.line) return;
+                const [from, to] = m.line;
+                object.position.lerpVectors(from, to, t);
+                object.rotation.set(0, Math.atan2(-(to.z - from.z), to.x - from.x), 0);
+                return;
             }
-        }
+            if (!('arc' in m)) return;
+            const phi = THREE.MathUtils.degToRad(m.arc[0] + t * (m.arc[1] - m.arc[0]));
+            object.position.set(CENTER.x - m.r * Math.cos(phi), m.y, CENTER.y - m.r * Math.sin(phi));
+            object.rotation.set(0, Math.atan2(Math.cos(phi), Math.sin(phi)), 0);
+        });
     });
 
     return null;
