@@ -38,9 +38,11 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
     const closeAlbum = useCallback(() => setAlbum(null), []);
     const [painting, setPainting] = useState<string | null>(null);
     const closePainting = useCallback(() => setPainting(null), []);
-    const [racesOpen, setRacesOpen] = useState(false);
-    const openRaces = useCallback(() => setRacesOpen(true), []);
-    const closeRaces = useCallback(() => setRacesOpen(false), []);
+    // The race calendar: from the tri bag it opens on the list, from a medal on that race.
+    const [raceView, setRaceView] = useState<{ raceId?: string } | null>(null);
+    const openRaces = useCallback(() => setRaceView({}), []);
+    const openMedal = useCallback((raceId: string) => setRaceView({ raceId }), []);
+    const closeRaces = useCallback(() => setRaceView(null), []);
     // A small note saying which view is outside the window, shown for a moment when it's switched.
     const [windowNote, setWindowNote] = useState<string | null>(null);
     useEffect(() => {
@@ -57,7 +59,7 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
         };
     }, []);
     const popupOpenRef = useRef(false);
-    popupOpenRef.current = booksOpen || album !== null || painting !== null || racesOpen;
+    popupOpenRef.current = booksOpen || album !== null || painting !== null || raceView !== null;
     const screenOverlay = useRef<HTMLDivElement>(null);
     useEffect(() => {
         registerScreenOverlay(screenOverlay.current);
@@ -138,6 +140,7 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
                         onAlbumClick={openAlbum}
                         onPaintingClick={setPainting}
                         onRacesClick={openRaces}
+                        onMedalClick={openMedal}
                     />
                 </Suspense>
             </Canvas>
@@ -166,7 +169,7 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
 
             {painting && <PaintingInfo paintingId={painting} onChange={setPainting} onClose={closePainting} />}
 
-            {racesOpen && <RaceCalendar onClose={closeRaces} />}
+            {raceView && <RaceCalendar initialRaceId={raceView.raceId} onClose={closeRaces} />}
 
             {phase === 'app' && (
                 <button className="room-exit" onClick={leave} aria-label="Back to the room">
