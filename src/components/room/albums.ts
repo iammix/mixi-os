@@ -214,6 +214,67 @@ export const ALBUMS: Album[] = [
             { title: 'One Way (feat. T-Pain)', video: 'Gr6rBaFAOLI' },
         ],
     },
+    // The Greek records aren't on MusicBrainz: tracklists and covers from each album's Deezer release,
+    // titles as the artists wrote them on their official YouTube uploads, and audio from those uploads.
+    {
+        id: 'metro',
+        title: 'ΜΕΤΡΟ',
+        artist: 'ΛΕΞ',
+        year: '2022',
+        cover: 'covers/metro.jpg',
+        // From LEX's channel (Τ.Γ.Κ.); AIRMAX only has the music video there.
+        tracks: [
+            { title: 'ΙΝΤΡΟ (ΑΠΟ ΤΟΥΣ ΥΠΟΝΟΜΟΥΣ)', video: 'iP4HQvJBlJk' },
+            { title: 'POINT BLANK', video: 'vsNO9QBNt5Q' },
+            { title: 'HOLDEM', video: 'De53s18hzro' },
+            { title: 'ΤΟ ΠΑΡΑΘΥΡΟ ΜΟΥ', video: '4vS92FlU4iQ' },
+            { title: 'M2S', video: '32WPwmEXL4Q' },
+            { title: 'AIRMAX', video: 'i9gruD-5dnw' },
+            { title: 'ΜΑΤΩΜΕΝΟ ΤΕΡΕΝ', video: 'EkRj8noRcQE' },
+            { title: 'SPIKE LEE', video: 'YyUzdcd4k-c' },
+            { title: 'ΠΟΥΛΙΑ', video: 'sk6u8Tit2ts' },
+        ],
+    },
+    {
+        id: 'liontaria',
+        title: 'Λιοντάρια',
+        artist: 'Buzz',
+        year: '2026',
+        cover: 'covers/liontaria.jpg',
+        // The official audio uploads on Zoro&BuzzOfficialTV.
+        tracks: [
+            { title: 'Master of Ceremony', video: 'FRT_2V4o1kc' },
+            { title: 'Liontaria', video: 'GbG_7n98INU' },
+            { title: 'O Anthos tis Neolaias (feat. Xplicit & Dj Marvel)', video: 'Sw0GuKtuUpk' },
+            { title: 'Margaritari', video: 'dsVOGZtbTpQ' },
+            { title: 'Proion Tou Dromou (feat. Ethismos)', video: 'Nk05NBPTEOc' },
+            { title: 'Aerostata (feat. Dj Marvel)', video: 'wPFOHdhZ_kU' },
+            { title: 'Fyllo Poreias', video: '8q3kOpBVgQA' },
+            { title: 'Prota i Omada (feat. Wang & Dj Marvel)', video: 'gTsaCOfdYhg' },
+            { title: 'Sakidia', video: 'C7jSUkhuaFM' },
+            { title: 'Fotovolides', video: 'FfSnOFUVVyQ' },
+        ],
+    },
+    {
+        id: 'metropolis',
+        title: 'Metropolis',
+        artist: 'ΕΘΙΣΜΟΣ',
+        year: '2026',
+        cover: 'covers/metropolis.jpg',
+        // The official audio uploads on Ethismos's channel (ΕΘΙΣΜΟΣ Ε-Θ-Σ).
+        tracks: [
+            { title: 'ΝΥΧΤΕΡΙΝΟΙ ΕΚΦΩΝΗΤΕΣ', video: '5aCp5iII97E' },
+            { title: 'ΓΥΑΛΙΝΟΣ ΔΡΟΜΕΑΣ', video: 'q9mEjcKL6Cs' },
+            { title: 'SIN CITY', video: 'NKnZZvBul1A' },
+            { title: 'SPICY MAYO (feat. SASKE)', video: '1MqwzWlnSj8' },
+            { title: 'TEXAS', video: '2vsocYki74A' },
+            { title: 'LONARID & LONALGAL', video: 'AJJBcbYCokk' },
+            { title: 'ΥΠΟΣΤΕΓΑ (feat. BLOODY HAWK)', video: 'wiUB4X5-IWs' },
+            { title: 'ΔΡΟΜΟΛΟΓΙΑ', video: 'kNpQWvtPupI' },
+            { title: 'ΓΙΑ ΜΙΑ ΜΕΡΑ (feat. ΛΕΞ & SIDARTA)', video: 'X0V8F4nmR_o' },
+            { title: 'ΟΙ ΠΙΟ ΩΡΑΙΕΣ ΜΑΣ ΣΤΙΓΜΕΣ', video: 'fL3erwbOodU' },
+        ],
+    },
 ];
 
 /** The records filed in the rack under the turntable, in the order they were added. */
