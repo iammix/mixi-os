@@ -14,9 +14,7 @@ import { getScreenSize, setScreenAspect } from './screenSpace';
 import RecordRack from './RecordRack';
 import Vinyls from './Vinyls';
 import { getRevealedRecord, isRackSleeve, rackAlbumOf, setRackHover } from './rackState';
-import MedalHanger from './MedalHanger';
 import WallClock from './WallClock';
-import { medalRaceIdOf, setMedalHover } from './medalState';
 
 export const MODEL_URL = `${import.meta.env.BASE_URL}models/room.glb`;
 const DRACO_URL = `${import.meta.env.BASE_URL}draco/`;
@@ -351,8 +349,6 @@ type RoomSceneProps = {
     onPaintingClick: (paintingId: string) => void;
     /** The tri bag (or the goggles and cap on it) was clicked: open the race calendar. */
     onRacesClick: () => void;
-    /** A medal on the hanger was clicked: open the race calendar on that race. */
-    onMedalClick: (raceId: string) => void;
 };
 
 type Clickable =
@@ -360,14 +356,10 @@ type Clickable =
     | { kind: 'album'; album?: string }
     | { kind: 'painting'; painting: string }
     | { kind: 'races' }
-    | { kind: 'medal'; race: string }
     | { kind: 'window' };
 
 /** What clicking this part of the room does, if anything. */
 const clickableFor = (object: THREE.Object3D | null): Clickable | null => {
-    // A medal hangs from the hanger's hooks, so it's checked before anything it's attached to.
-    const medal = medalRaceIdOf(object);
-    if (medal) return { kind: 'medal', race: medal };
     for (let o = object; o; o = o.parent) {
         if (o.name === BIKE_ROOT) return { kind: 'bike' };
         if (opensRaceCalendar(o.name)) return { kind: 'races' };
@@ -384,15 +376,15 @@ const clickableFor = (object: THREE.Object3D | null): Clickable | null => {
     return null;
 };
 
-const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, onBooksClick, onAlbumClick, onPaintingClick, onRacesClick, onMedalClick }) => {
+const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, onBooksClick, onAlbumClick, onPaintingClick, onRacesClick }) => {
     const { scene } = useGLTF(MODEL_URL, DRACO_URL);
     const { hero, screen, screenSize } = useRoomPoses(scene);
     useScreenAspect(screenSize);
     const canvas = useThree((s) => s.gl.domElement);
 
     // While looking around the room, the bike links to Strava, the records open their tracklists,
-    // the paintings open their stories, the tri bag unfolds the race calendar, a medal opens it on
-    // its race and the window switches between home and Rotterdam.
+    // the paintings open their stories and the tri bag unfolds the race calendar
+    // and the window switches between home and Rotterdam.
     const onRoomHover = useCallback(
         (e: ThreeEvent<PointerEvent>) => {
             // Only the nearest hit counts, not whatever is behind it.
@@ -400,15 +392,12 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             canvas.style.cursor = !zoomed && clickableFor(e.object) ? 'pointer' : '';
             // Pointing at the record rack slides its sleeves out (see RecordRack).
             setRackHover(!zoomed && isRackSleeve(e.object) ? e.object : null);
-            // Pointing at a medal sets it swinging (see MedalHanger).
-            setMedalHover(!zoomed ? medalRaceIdOf(e.object) : null);
         },
         [canvas, zoomed],
     );
     const onRoomLeave = useCallback(() => {
         canvas.style.cursor = '';
         setRackHover(null);
-        setMedalHover(null);
     }, [canvas]);
     const onRoomClick = useCallback(
         (e: ThreeEvent<MouseEvent>) => {
@@ -419,10 +408,9 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             else if (target?.kind === 'album') onAlbumClick(target.album);
             else if (target?.kind === 'painting') onPaintingClick(target.painting);
             else if (target?.kind === 'races') onRacesClick();
-            else if (target?.kind === 'medal') onMedalClick(target.race);
             else if (target?.kind === 'window') toggleWindowPlace();
         },
-        [zoomed, onAlbumClick, onPaintingClick, onRacesClick, onMedalClick],
+        [zoomed, onAlbumClick, onPaintingClick, onRacesClick],
     );
 
     useEffect(() => {
@@ -461,7 +449,6 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             <Books scene={scene} zoomed={zoomed} onSelect={onBooksClick} />
             <Vinyls zoomed={zoomed} onSelect={onAlbumClick} />
             <RecordRack scene={scene} zoomed={zoomed} />
-            <MedalHanger scene={scene} zoomed={zoomed} />
             <WallClock scene={scene} />
             <WindowView scene={scene} />
             <CameraRig

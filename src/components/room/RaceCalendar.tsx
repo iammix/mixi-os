@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { PaperSheet } from './paperSim';
-import { RACES, Race, RaceRoute, daysUntil, isDone, publicUrl, raceDay, racesInOrder } from './races';
+import { Race, RaceRoute, daysUntil, isDone, publicUrl, raceDay, racesInOrder } from './races';
 
 // The race calendar that comes out of the tri bag: a sheet of ruled notebook paper squished into
 // a ball that flies up and is pulled open (a small paper simulation, see paperSim), with the race
@@ -415,15 +415,9 @@ const PaperUnwrap: React.FC<{ onFlat: () => void }> = ({ onFlat }) => {
     return <div ref={host} className="race-sim" aria-hidden />;
 };
 
-type RaceCalendarProps = {
-    onClose: () => void;
-    /** Open straight on this race's story (from its medal), if it has one; otherwise on the list. */
-    initialRaceId?: string;
-};
-
-const RaceCalendar: React.FC<RaceCalendarProps> = ({ onClose, initialRaceId }) => {
+const RaceCalendar: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const [phase, setPhase] = useState<Phase>(() => (prefersReducedMotion() ? 'open' : 'sim'));
-    const [race, setRace] = useState<Race | null>(() => RACES.find((r) => r.id === initialRaceId && r.post) ?? null);
+    const [race, setRace] = useState<Race | null>(null);
     const sheet = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
