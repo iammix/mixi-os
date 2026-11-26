@@ -69,6 +69,13 @@ if (typeof window !== 'undefined') {
     ['pointerdown', 'keydown', 'touchend'].forEach((g) => window.addEventListener(g, wake, true));
 }
 
+let needleQuiet = false;
+
+/** Keep the needle drop/lift quiet: while scratching, the needle never leaves the record. */
+export function quietNeedle(on: boolean) {
+    needleQuiet = on;
+}
+
 /** The context if it's allowed to make sound right now. */
 function ready() {
     const ctx = audio();
@@ -113,6 +120,7 @@ function thump(ctx: AudioContext, at: number, gain: number, frequency: number, l
 
 /** The needle drops into the lead-in groove: a thump, a click, then crackle fading under the music. */
 export function needleDrop() {
+    if (needleQuiet) return;
     const ctx = ready();
     if (!ctx) return;
     const now = ctx.currentTime;
@@ -138,6 +146,7 @@ export function needleDrop() {
 
 /** The needle comes up off the record. */
 export function needleLift() {
+    if (needleQuiet) return;
     const ctx = ready();
     if (!ctx) return;
     const now = ctx.currentTime;
@@ -152,4 +161,65 @@ export function recordLands() {
     const now = ctx.currentTime;
     thump(ctx, now, 0.5, 80, 0.12);
     tick(ctx, now, 0.15, 900, 0.05);
+}
+
+// --- Scratching a song ---
+// The YouTube player's sound can't be reached to scratch it for real, so while a song is scratched
+// it's paused and this plays instead: the whoosh of the record under the needle (band-passed
+// noise) and the pitch of the music being dragged (a buzzy tone), both following the record's speed.
+
+let scratchFx: { osc: OscillatorNode; noise: AudioBufferSourceNode; band: BiquadFilterNode; tone: GainNode; hiss: GainNode } | null = null;
+
+export function startScratchSound() {
+    const ctx = ready();
+    if (!ctx || scratchFx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.value = 40;
+    const lowpass = ctx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.value = 1400;
+    const tone = ctx.createGain();
+    tone.gain.value = 0;
+    osc.connect(lowpass).connect(tone).connect(master!);
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = crackle;
+    noise.loop = true;
+    const band = ctx.createBiquadFilter();
+    band.type = 'bandpass';
+    band.Q.value = 1.2;
+    band.frequency.value = 900;
+    const hiss = ctx.createGain();
+    hiss.gain.value = 0;
+    noise.connect(band).connect(hiss).connect(master!);
+
+    osc.start(now);
+    noise.start(now);
+    scratchFx = { osc, noise, band, tone, hiss };
+}
+
+/** The record's speed under the hand: 1 = normal, 0 = still, negative = backwards. */
+export function scratchSound(speed: number) {
+    const ctx = context;
+    if (!ctx || !scratchFx) return;
+    const now = ctx.currentTime;
+    const s = Math.min(4, Math.abs(speed));
+    scratchFx.osc.frequency.setTargetAtTime(35 + 110 * s, now, 0.01);
+    scratchFx.band.frequency.setTargetAtTime(500 + 1600 * s, now, 0.01);
+    scratchFx.tone.gain.setTargetAtTime(Math.min(0.5, 0.3 * s), now, 0.01);
+    scratchFx.hiss.gain.setTargetAtTime(Math.min(0.9, 0.5 * s), now, 0.01);
+}
+
+export function stopScratchSound() {
+    const ctx = context;
+    if (!ctx || !scratchFx) return;
+    const { osc, noise, tone, hiss } = scratchFx;
+    const now = ctx.currentTime;
+    tone.gain.setTargetAtTime(0, now, 0.02);
+    hiss.gain.setTargetAtTime(0, now, 0.02);
+    osc.stop(now + 0.2);
+    noise.stop(now + 0.2);
+    scratchFx = null;
 }

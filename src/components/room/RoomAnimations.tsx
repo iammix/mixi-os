@@ -4,6 +4,8 @@ import { Billboard } from '@react-three/drei';
 import * as THREE from 'three';
 import { ALBUMS, coverUrl } from './albums';
 import { SWAP_SECONDS, getNowPlaying, isMusicPlaying, musicProgress, musicTime, secondsSinceSwap } from './musicState';
+import { getPad, padBeatPhase } from './padPlayer';
+import { isScratching, scratchSpeed, takeTurn } from './scratch';
 
 const RPM_33 = (33.333 * Math.PI * 2) / 60;
 const BPM = 92;
@@ -249,12 +251,17 @@ export const RecordPlayerAndSpeakers: React.FC<{ scene: THREE.Object3D }> = ({ s
         const m = motion.current;
         const swapTime = secondsSinceSwap();
         const swapping = swapTime < SWAP_SECONDS;
-        const playing = isMusicPlaying() && !swapping;
+        // A drum pad loop counts as being on the turntable too: it's what gets scratched.
+        const padOn = getPad().playing !== null;
+        const scratching = isScratching();
+        const playing = (isMusicPlaying() || padOn || scratching) && !swapping;
 
         // The platter spins up when the song starts and coasts to a stop when it's paused
-        // (quicker when the record is being changed).
-        m.spin = THREE.MathUtils.damp(m.spin, playing ? 1 : 0, playing ? SPIN_UP : swapping ? SWAP_SPIN_DOWN : SPIN_DOWN, delta);
-        rig.record.rotation.y -= RPM_33 * m.spin * delta;
+        // (quicker when the record is being changed). A hand on it stops it dead and turns it
+        // however the hand goes; let go and the motor brings it back up to speed.
+        if (scratching) m.spin = 0;
+        else m.spin = THREE.MathUtils.damp(m.spin, playing ? 1 : 0, playing ? SPIN_UP : swapping ? SWAP_SPIN_DOWN : SPIN_DOWN, delta);
+        rig.record.rotation.y -= RPM_33 * m.spin * delta + takeTurn();
         animateDisc(rig, swapTime);
 
         // Cue the arm onto the record and track inwards with the song; lift it back to rest on pause.
@@ -262,14 +269,17 @@ export const RecordPlayerAndSpeakers: React.FC<{ scene: THREE.Object3D }> = ({ s
         m.arm = THREE.MathUtils.damp(m.arm, armGoal, swapping ? SWAP_TONEARM_SPEED : TONEARM_SPEED, delta);
         // The speakers only kick in once the stylus has settled into the groove.
         const onRecord = playing && Math.abs(m.arm - armGoal) < Math.abs(rig.tonearmOuter) * 0.05;
-        m.level = THREE.MathUtils.damp(m.level, onRecord ? 1 : 0, SPEAKER_SPEED, delta);
+        // While scratching, the speakers move with the scratch rather than the beat.
+        const level = scratching ? Math.min(1, Math.abs(scratchSpeed()) * 0.6) : onRecord ? 1 : 0;
+        m.level = THREE.MathUtils.damp(m.level, level, SPEAKER_SPEED, delta);
 
         // A little wow-and-flutter wobble while the stylus rides the groove.
         rig.tonearm.rotation.y = m.arm + m.level * Math.sin(t * RPM_33) * 0.0015;
 
-        // Keep the beat locked to the song so it freezes on pause and resumes in time.
+        // Keep the beat locked to the song so it freezes on pause and resumes in time (or to the
+        // drum pad's loop while one plays).
         const songTime = musicTime();
-        const beat = (songTime * BPM) / 60;
+        const beat = padOn ? padBeatPhase() : (songTime * BPM) / 60;
         const phase = beat % 1;
         const kick = Math.exp(-phase * 7) * (0.75 + 0.25 * Math.sin(beat * 0.5));
         const snare = Math.floor(beat) % 2 === 1 ? Math.exp(-Math.abs(phase - 0.02) * 10) * 0.5 : 0;

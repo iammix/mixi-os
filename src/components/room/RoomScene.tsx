@@ -17,6 +17,8 @@ import { getRevealedRecord, isRackSleeve, rackAlbumOf, setRackHover } from './ra
 import TrainingBoard from './TrainingBoard';
 import { isTrainingBoard } from './training';
 import WallClock from './WallClock';
+import ScratchControl from './ScratchControl';
+import { isRecordGrabbed } from './scratch';
 import ChristmasLights from './ChristmasLights';
 import DrumPad from './DrumPad';
 import { isDrumPad } from './beats';
@@ -169,7 +171,8 @@ const CameraRig: React.FC<CameraRigProps> = ({ zoomed, hero, screen, screenSize,
         const el = gl.domElement;
         let last: { x: number; y: number } | null = null;
         const down = (e: PointerEvent) => {
-            if (zoomedRef.current) return;
+            // A hand on the record is scratching it, not turning the room (see ScratchControl).
+            if (zoomedRef.current || isRecordGrabbed()) return;
             last = { x: e.clientX, y: e.clientY };
             el.setPointerCapture(e.pointerId);
             el.style.cursor = 'grabbing';
@@ -426,6 +429,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             <TrainingBoard scene={scene} />
             <DrumPad scene={scene} />
             <ChristmasLights scene={scene} />
+            <ScratchControl scene={scene} zoomed={zoomed} />
             <WindowView scene={scene} />
             <CameraRig
                 zoomed={zoomed}
