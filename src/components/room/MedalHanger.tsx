@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { DEFAULT_RIBBON, HOOK_PREFIX, MEDAL_PREFIX, engraving, finishedRaces, hangMedals } from './medals';
+import { DEFAULT_RIBBON, HOOK_PREFIX, MEDAL_PREFIX, engraving, finishedRaces, fitEngraving, hangMedals } from './medals';
 import { getMedalHover } from './medalState';
 import { RACES, Race, publicUrl } from './races';
 
@@ -32,25 +32,6 @@ type Medal = { group: THREE.Group; amplitude: number; phase: number; raceId: str
 
 const FONT = "Georgia, 'Times New Roman', serif";
 
-/** Split a title into at most `lines` lines that fit `width` px. */
-function wrap(ctx: CanvasRenderingContext2D, text: string, width: number, lines: number) {
-    const out: string[] = [];
-    let line = '';
-    for (const word of text.split(' ')) {
-        const next = line ? `${line} ${word}` : word;
-        if (line && ctx.measureText(next).width > width) {
-            out.push(line);
-            line = word;
-        } else line = next;
-    }
-    if (line) out.push(line);
-    if (out.length > lines) {
-        out.length = lines;
-        out[lines - 1] += '…';
-    }
-    return out;
-}
-
 /** The engraved face: the race's name and year in darker gold on gold, inside a ring. */
 function engravedFace(race: Race) {
     const size = 512;
@@ -75,9 +56,13 @@ function engravedFace(race: Race) {
     ctx.fillStyle = ENGRAVED;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = `bold 52px ${FONT}`;
-    const lines = wrap(ctx, title.toUpperCase(), 330, 3);
-    const lineHeight = 60;
+    const measure = (text: string, size: number) => {
+        ctx.font = `bold ${size}px ${FONT}`;
+        return ctx.measureText(text).width;
+    };
+    const { size: fontSize, lines } = fitEngraving(title.toUpperCase(), measure, 330, 3, [52, 46, 40, 34]);
+    ctx.font = `bold ${fontSize}px ${FONT}`;
+    const lineHeight = fontSize * 1.15;
     const top = c - 40 - ((lines.length - 1) * lineHeight) / 2;
     lines.forEach((line, i) => ctx.fillText(line, c, top + i * lineHeight));
     ctx.fillRect(c - 60, top + lines.length * lineHeight - 18, 120, 5);

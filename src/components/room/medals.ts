@@ -34,3 +34,39 @@ export const medalRaceId = (objectName: string): string | null => {
     if (objectName.startsWith(HOOK_PREFIX) || objectName.startsWith('Medal_hanger')) return null;
     return objectName.slice(MEDAL_PREFIX.length) || null;
 };
+
+/** Split text into lines no wider than `width` at this font size. */
+const wrapAt = (text: string, size: number, measure: (text: string, size: number) => number, width: number) => {
+    const lines: string[] = [];
+    let line = '';
+    for (const word of text.split(' ')) {
+        const next = line ? `${line} ${word}` : word;
+        if (line && measure(next, size) > width) {
+            lines.push(line);
+            line = word;
+        } else line = next;
+    }
+    if (line) lines.push(line);
+    return lines;
+};
+
+/**
+ * The biggest of `sizes` (largest first) at which the engraved title fits on `maxLines` lines of
+ * `width`; if none does, the smallest size with the last line cut off with an ellipsis.
+ */
+export const fitEngraving = (
+    title: string,
+    measure: (text: string, size: number) => number,
+    width: number,
+    maxLines: number,
+    sizes: number[],
+): { size: number; lines: string[] } => {
+    for (const size of sizes) {
+        const lines = wrapAt(title, size, measure, width);
+        if (lines.length <= maxLines) return { size, lines };
+    }
+    const size = sizes[sizes.length - 1];
+    const lines = wrapAt(title, size, measure, width).slice(0, maxLines);
+    lines[maxLines - 1] += '…';
+    return { size, lines };
+};
