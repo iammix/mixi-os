@@ -2,8 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { OrthographicCamera, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { getNowPlaying } from './musicState';
+import { getNowPlaying, playNext } from './musicState';
 import { paintingFor } from './paintings';
 import { opensRaceCalendar } from './races';
 import { isInWindowView, isWindow, toggleWindowPlace } from './windowState';
@@ -12,6 +11,7 @@ import Books from './Books';
 import { CoffeeSteam, RecordPlayerAndSpeakers } from './RoomAnimations';
 import { getScreenSize, setScreenAspect } from './screenSpace';
 import RecordRack from './RecordRack';
+import RoomLights from './RoomLights';
 import Vinyls from './Vinyls';
 import { getRevealedRecord, isRackSleeve, rackAlbumOf, setRackHover } from './rackState';
 import TrainingBoard from './TrainingBoard';
@@ -293,53 +293,6 @@ const CameraRig: React.FC<CameraRigProps> = ({ zoomed, hero, screen, screenSize,
     return <OrthographicCamera ref={camRef} makeDefault manual />;
 };
 
-const Lights: React.FC = () => {
-    const { gl, scene } = useThree();
-
-    // Soft image-based light so metals and glossy surfaces have something to reflect.
-    useEffect(() => {
-        const pmrem = new THREE.PMREMGenerator(gl);
-        const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-        scene.environment = env;
-        scene.environmentIntensity = 0.35;
-        return () => {
-            scene.environment = null;
-            env.dispose();
-            pmrem.dispose();
-        };
-    }, [gl, scene]);
-
-    // Approximations of the Blender lights (Blender Z-up -> three.js Y-up: x, z, -y).
-    return (
-        <>
-            <hemisphereLight args={['#ffe9d2', '#3a2a20', 0.35]} />
-            <directionalLight
-                position={[1, 6, 3]}
-                color="#ffc78c"
-                intensity={2.4}
-                castShadow
-                shadow-mapSize={[2048, 2048]}
-                shadow-bias={-0.0004}
-                shadow-normalBias={0.02}
-                shadow-camera-left={-4}
-                shadow-camera-right={4}
-                shadow-camera-top={4}
-                shadow-camera-bottom={-4}
-                shadow-camera-near={0.5}
-                shadow-camera-far={15}
-            />
-            <directionalLight position={[2, 5, 4]} color="#ffd4a3" intensity={1.0} />
-            <directionalLight position={[-3.8, 4, -0.6]} color="#7aa0ff" intensity={0.7} />
-            <directionalLight position={[4, 4, -2]} color="#b3c9ff" intensity={0.35} />
-            <pointLight position={[1.8, 1.49, 0.74]} color="#ff9138" intensity={3} distance={4} decay={2} />
-            <pointLight position={[-0.36, 1.08, -1.52]} color="#ffa64d" intensity={0.8} distance={1.5} decay={2} />
-            {[0.64, 1.18, 1.72].map((x) => (
-                <pointLight key={x} position={[x, 1.86, -1.5]} color="#ffa152" intensity={0.25} distance={1} decay={2} />
-            ))}
-        </>
-    );
-};
-
 type RoomSceneProps = {
     zoomed: boolean;
     screenOverlay: React.RefObject<HTMLDivElement>;
@@ -361,6 +314,7 @@ type Clickable =
     | { kind: 'painting'; painting: string }
     | { kind: 'races' }
     | { kind: 'training' }
+    | { kind: 'speaker' }
     | { kind: 'window' };
 
 /** What clicking this part of the room does, if anything. */
@@ -369,6 +323,8 @@ const clickableFor = (object: THREE.Object3D | null): Clickable | null => {
         if (o.name === BIKE_ROOT) return { kind: 'bike' };
         if (opensRaceCalendar(o.name)) return { kind: 'races' };
         if (isTrainingBoard(o.name)) return { kind: 'training' };
+        // Either speaker (its parts, or the group RoomAnimations puts them in) skips to the next song.
+        if (/^Speaker[ _]/.test(o.name)) return { kind: 'speaker' };
         if (isWindow(o.name)) return { kind: 'window' };
         const painting = paintingFor(o.name);
         if (painting) return { kind: 'painting', painting };
@@ -390,7 +346,8 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
 
     // While looking around the room, the bike links to Strava, the records open their tracklists,
     // the paintings open their stories, the tri bag unfolds the race calendar, the cork board
-    // comes up close and the window switches between home and Rotterdam.
+    // comes up close, the speakers skip to the next song and the window switches between home and
+    // Rotterdam.
     const onRoomHover = useCallback(
         (e: ThreeEvent<PointerEvent>) => {
             // Only the nearest hit counts, not whatever is behind it.
@@ -415,6 +372,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             else if (target?.kind === 'painting') onPaintingClick(target.painting);
             else if (target?.kind === 'races') onRacesClick();
             else if (target?.kind === 'training') onTrainingClick();
+            else if (target?.kind === 'speaker') playNext();
             else if (target?.kind === 'window') toggleWindowPlace();
         },
         [zoomed, onAlbumClick, onPaintingClick, onRacesClick, onTrainingClick],
@@ -449,7 +407,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
 
     return (
         <>
-            <Lights />
+            <RoomLights scene={scene} />
             <primitive object={scene} onPointerMove={onRoomHover} onPointerOut={onRoomLeave} onClick={onRoomClick} />
             <RecordPlayerAndSpeakers scene={scene} />
             <CoffeeSteam scene={scene} />

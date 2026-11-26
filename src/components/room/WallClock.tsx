@@ -2,6 +2,7 @@ import React, { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { clockAngles, timeIn } from './clock';
+import { roomNow } from './sun';
 import { WINDOW_PLACES, getWindowPlace } from './windowState';
 
 // The clock on the back wall (scripts/build_wall_clock.py) keeps the time of wherever the window
@@ -31,7 +32,7 @@ const WallClock: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
 
     useFrame((_, rawDelta) => {
         const delta = Math.min(rawDelta, 0.1);
-        const angles = clockAngles(timeIn(new Date(), WINDOW_PLACES[getWindowPlace()].timeZone));
+        const angles = clockAngles(timeIn(roomNow(), WINDOW_PLACES[getWindowPlace()].timeZone));
         // The hour hand eases round when the place changes; otherwise it is simply where it should be.
         const shown = hourShown.current ?? angles.hours;
         hourShown.current = shown + turn(shown, angles.hours) * (1 - Math.exp(-SWEEP * delta));
