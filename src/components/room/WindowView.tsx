@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { applyWeather, lookAt } from './skyLook';
+import { createPrecipitation } from './Precipitation';
+import { CENTER, PHI_RANGE, SKY_HIGH, SKY_LOW, SKY_R, STENCIL } from './viewGeometry';
+import { getWeather, startWeather, subscribeWeather } from './weather';
 import { VIEW_MASK, WINDOW_PLACES, WindowPlace, getWindowPlace, subscribeWindowPlace } from './windowState';
 
 // The views outside the window, Thessaloniki and Rotterdam (built by scripts/build_window_view.py).
@@ -10,14 +14,10 @@ import { VIEW_MASK, WINDOW_PLACES, WindowPlace, getWindowPlace, subscribeWindowP
 // The sky and the light follow where the sun really is over that place right now (lit windows,
 // street lamps, the floodlit White Tower and stars at night), and now and then something passes: a
 // cyclist on the promenade and a sailboat in Thessaloniki, a water taxi crossing the Maas in Rotterdam.
-
-// The window in three's coordinates (Blender x, z, -y), and the rings the view is built on.
-const CENTER = new THREE.Vector2(-2.24, -0.85);
-const SKY_R = 3.15;
-const PHI_RANGE: [number, number] = [-12, 88];
-// Height of the sky's horizon and top as seen through the window.
-const SKY_LOW = 0.6;
-const SKY_HIGH = 1.35;
+//
+// The weather is real too (weather.ts, from Open-Meteo): clouds drift across the sky and grey and
+// dim the view, rain or snow falls (Precipitation.ts), and wind slants it, speeds up the clouds and
+// rocks the boats. Add ?weather=rain,windy (or sunny, cloudy, snow) to the address to try one.
 
 /** Something that now and then goes by along one of the rings: name, radius, height, seconds. */
 /**
@@ -63,45 +63,6 @@ function sunPosition(date: Date, lat: number, lon: number) {
     return { elevation: elevation / rad, azimuth: ((azimuth / rad) % 360 + 360) % 360 };
 }
 
-type Look = { top: string; horizon: string; tint: string; light: number; windows: number; stars: number };
-
-// What the view looks like at a few sun elevations (degrees); in between it blends.
-const LOOKS: [number, Look][] = [
-    [-18, { top: '#070c1f', horizon: '#141f3c', tint: '#2a3358', light: 0.28, windows: 1, stars: 1 }],
-    [-10, { top: '#101c40', horizon: '#3a3f6e', tint: '#3d4672', light: 0.4, windows: 1, stars: 0.6 }],
-    [-4, { top: '#24396f', horizon: '#9a6a86', tint: '#7d6a8a', light: 0.6, windows: 0.9, stars: 0 }],
-    [1, { top: '#3e5c9c', horizon: '#f2925a', tint: '#f0a070', light: 0.85, windows: 0.5, stars: 0 }],
-    [6, { top: '#4f7cc4', horizon: '#f6c891', tint: '#ffd9b0', light: 0.95, windows: 0, stars: 0 }],
-    [18, { top: '#4f8bdc', horizon: '#c2dcf2', tint: '#fff4e6', light: 1, windows: 0, stars: 0 }],
-    [40, { top: '#3f84de', horizon: '#b6d6f4', tint: '#ffffff', light: 1.04, windows: 0, stars: 0 }],
-];
-
-function lookAt(elevation: number) {
-    const i = LOOKS.findIndex(([e]) => e > elevation);
-    if (i === 0) return LOOKS[0][1];
-    if (i === -1) return LOOKS[LOOKS.length - 1][1];
-    const [e0, a] = LOOKS[i - 1];
-    const [e1, b] = LOOKS[i];
-    const t = (elevation - e0) / (e1 - e0);
-    const mix = (x: string, y: string) => '#' + new THREE.Color(x).lerp(new THREE.Color(y), t).getHexString();
-    return {
-        top: mix(a.top, b.top),
-        horizon: mix(a.horizon, b.horizon),
-        tint: mix(a.tint, b.tint),
-        light: a.light + (b.light - a.light) * t,
-        windows: a.windows + (b.windows - a.windows) * t,
-        stars: a.stars + (b.stars - a.stars) * t,
-    };
-}
-
-const STENCIL = {
-    stencilWrite: true,
-    stencilRef: 1,
-    stencilFunc: THREE.EqualStencilFunc,
-    stencilFail: THREE.KeepStencilOp,
-    stencilZFail: THREE.KeepStencilOp,
-    stencilZPass: THREE.KeepStencilOp,
-};
 
 const skyMaterial = () =>
     new THREE.ShaderMaterial({
@@ -112,6 +73,9 @@ const skyMaterial = () =>
             horizon: { value: new THREE.Color() },
             sun: { value: new THREE.Vector3() }, // phi (rad), height, visibility
             stars: { value: 0 },
+            cloud: { value: 0 }, // 0 clear .. 1 overcast
+            drift: { value: 0 }, // how far the clouds have moved along
+            cloudColor: { value: new THREE.Color() },
         },
         vertexShader: /* glsl */ `
             varying vec3 vWorld;
@@ -126,8 +90,20 @@ const skyMaterial = () =>
             uniform vec3 horizon;
             uniform vec3 sun;
             uniform float stars;
+            uniform float cloud;
+            uniform float drift;
+            uniform vec3 cloudColor;
             varying vec3 vWorld;
             float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+            float noise(vec2 p) {
+                vec2 i = floor(p);
+                vec2 f = fract(p);
+                f = f * f * (3.0 - 2.0 * f);
+                return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+            }
+            float fbm(vec2 p) {
+                return 0.55 * noise(p) + 0.3 * noise(p * 2.1 + 3.7) + 0.15 * noise(p * 4.3 + 9.1);
+            }
             void main() {
                 float h = clamp((vWorld.y - ${SKY_LOW.toFixed(2)}) / ${(SKY_HIGH - SKY_LOW).toFixed(2)}, 0.0, 1.0);
                 vec3 color = mix(horizon, top, smoothstep(0.0, 1.0, h));
@@ -138,6 +114,12 @@ const skyMaterial = () =>
                 vec2 cell = floor(vec2(phi * 420.0, vWorld.y * 140.0));
                 float star = step(0.993, hash(cell)) * stars * smoothstep(0.15, 0.6, h);
                 color += vec3(star);
+                // Clouds: soft noise drifting along the sky, more and denser as it gets overcast.
+                vec2 cp = vec2(phi * ${SKY_R.toFixed(2)} * 1.6 + drift, vWorld.y * 6.0 - drift * 0.15);
+                float n = fbm(cp);
+                float cover = smoothstep(0.66 - 0.5 * cloud, 0.8 - 0.42 * cloud, n) * min(1.0, cloud * 1.8);
+                cover *= mix(0.55, 1.0, smoothstep(0.0, 0.3, h));
+                color = mix(color, cloudColor * mix(0.78, 1.0, n), cover);
                 gl_FragColor = vec4(color, 1.0);
                 #include <colorspace_fragment>
             }
@@ -163,11 +145,24 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
         }).filter((m) => m.object);
         return { roots, mask, movers };
     }, [scene]);
-    const state = useRef<{ tinted: Tinted[]; sky: THREE.ShaderMaterial | null; lastUpdate: number }>({
+    const state = useRef<{ tinted: Tinted[]; sky: THREE.ShaderMaterial | null; lastUpdate: number; wind: number; light: number; precipitation: ReturnType<typeof createPrecipitation> | null }>({
         tinted: [],
         sky: null,
         lastUpdate: -Infinity,
+        wind: 0,
+        light: 1,
+        precipitation: null,
     });
+
+    // The real weather in both places; re-light as soon as it changes.
+    useEffect(() => {
+        const stop = startWeather();
+        const unsubscribe = subscribeWeather(() => (state.current.lastUpdate = -Infinity));
+        return () => {
+            unsubscribe();
+            stop();
+        };
+    }, []);
 
     // Set up the stencil mask and give the view its own materials.
     useEffect(() => {
@@ -211,15 +206,20 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
             mesh.castShadow = false;
             mesh.receiveShadow = false;
         }));
-        state.current = { tinted, sky, lastUpdate: -Infinity };
+        // Rain or snow, fewer drops on small screens.
+        const precipitation = createPrecipitation(window.innerWidth < 768 ? 1200 : 2400);
+        scene.add(precipitation.points);
+        state.current = { tinted, sky, lastUpdate: -Infinity, wind: state.current.wind, light: 1, precipitation };
         return () => {
             originals.forEach(([mesh, material]) => (mesh.material = material));
             maskMaterial.dispose();
             sky.dispose();
+            scene.remove(precipitation.points);
+            precipitation.dispose();
             tinted.forEach((t) => t.material.dispose());
-            state.current = { tinted: [], sky: null, lastUpdate: -Infinity };
+            state.current = { tinted: [], sky: null, lastUpdate: -Infinity, wind: 0, light: 1, precipitation: null };
         };
-    }, [parts]);
+    }, [parts, scene]);
 
     // Home or Rotterdam; re-light straight away for the new place.
     useEffect(() => {
@@ -230,15 +230,27 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
         state.current.lastUpdate = -Infinity;
     }, [parts, place]);
 
-    useFrame(({ clock }) => {
+    useFrame(({ clock, gl }, delta) => {
         const s = state.current;
         const now = clock.elapsedTime;
+        const weather = getWeather(getWindowPlace());
+        s.precipitation?.update(weather, now, gl.domElement.height, s.light);
+        // Clouds drift, faster in the wind.
+        if (s.sky) s.sky.uniforms.drift.value += delta * (0.02 + Math.min(s.wind, 60) / 45 * 0.08);
         // Light and sky: follow the sun, checked twice a minute.
         if (s.sky && now - s.lastUpdate > 30) {
             s.lastUpdate = now;
             const { lat, lon } = WINDOW_PLACES[getWindowPlace()];
             const sun = sunPosition(new Date(), lat, lon);
-            const look = lookAt(sun.elevation);
+            const weather = getWeather(getWindowPlace());
+            const look = applyWeather(lookAt(sun.elevation), weather);
+            s.sky.uniforms.cloud.value = weather.cloud;
+            s.sky.uniforms.cloudColor.value
+                .set(look.horizon)
+                .lerp(new THREE.Color('#ffffff'), 0.45)
+                .multiplyScalar(look.light * 0.95 * (1 - 0.35 * weather.intensity));
+            s.wind = weather.wind;
+            s.light = look.light;
             s.sky.uniforms.top.value.set(look.top);
             s.sky.uniforms.horizon.value.set(look.horizon);
             s.sky.uniforms.stars.value = look.stars;
@@ -246,7 +258,7 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
             const across = THREE.MathUtils.clamp((sun.azimuth - 90) / 180, 0, 1);
             const phi = THREE.MathUtils.degToRad(PHI_RANGE[0] + 8 + across * (PHI_RANGE[1] - PHI_RANGE[0] - 16));
             const height = SKY_LOW + 0.04 + THREE.MathUtils.clamp(sun.elevation / 60, -0.2, 1) * (SKY_HIGH - SKY_LOW);
-            s.sky.uniforms.sun.value.set(phi, height, sun.elevation > -2 ? 1 : 0);
+            s.sky.uniforms.sun.value.set(phi, height, sun.elevation > -2 ? 1 - 0.9 * weather.cloud : 0);
             const tint = new THREE.Color(look.tint).multiplyScalar(look.light);
             s.tinted.forEach(({ material, base, glow }) => {
                 material.color.copy(base).multiply(tint);
@@ -268,8 +280,10 @@ const WindowView: React.FC<{ scene: THREE.Object3D }> = ({ scene }) => {
             }
             if (!('arc' in m)) return;
             const phi = THREE.MathUtils.degToRad(m.arc[0] + t * (m.arc[1] - m.arc[0]));
-            object.position.set(CENTER.x - m.r * Math.cos(phi), m.y, CENTER.y - m.r * Math.sin(phi));
-            object.rotation.set(0, Math.atan2(Math.cos(phi), Math.sin(phi)), 0);
+            // Boats rock on the water when it's windy.
+            const rock = weather.windy ? 1 : 0;
+            object.position.set(CENTER.x - m.r * Math.cos(phi), m.y + rock * 0.004 * Math.sin(now * 1.5 + m.offset), CENTER.y - m.r * Math.sin(phi));
+            object.rotation.set(0, Math.atan2(Math.cos(phi), Math.sin(phi)), rock * 0.06 * Math.sin(now * 2 + m.offset));
         });
     });
 
