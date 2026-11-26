@@ -6,6 +6,8 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import { getNowPlaying } from './musicState';
 import { paintingFor } from './paintings';
 import { opensRaceCalendar } from './races';
+import { isInWindowView, isWindow, toggleWindowPlace } from './windowState';
+import WindowView from './WindowView';
 import Books from './Books';
 import { CoffeeSteam, RecordPlayerAndSpeakers } from './RoomAnimations';
 import { getScreenSize, setScreenAspect } from './screenSpace';
@@ -42,6 +44,14 @@ const MATERIAL_TWEAKS: [RegExp, (m: THREE.MeshStandardMaterial) => void][] = [
     [/lamp diffuser|backlit linen/i, (m) => {
         m.emissive.set('#ff9a45');
         m.emissiveIntensity = 2.2;
+    }],
+    // Window glass: plain see-through glass instead of transmission, which renders what's behind
+    // it at low resolution and blurs the view outside.
+    [/^window glass$/i, (m) => {
+        (m as THREE.MeshPhysicalMaterial).transmission = 0;
+        m.transparent = true;
+        m.opacity = 0.1;
+        m.depthWrite = false;
     }],
 ];
 
@@ -344,13 +354,15 @@ type Clickable =
     | { kind: 'bike' }
     | { kind: 'album'; album?: string }
     | { kind: 'painting'; painting: string }
-    | { kind: 'races' };
+    | { kind: 'races' }
+    | { kind: 'window' };
 
 /** What clicking this part of the room does, if anything. */
 const clickableFor = (object: THREE.Object3D | null): Clickable | null => {
     for (let o = object; o; o = o.parent) {
         if (o.name === BIKE_ROOT) return { kind: 'bike' };
         if (opensRaceCalendar(o.name)) return { kind: 'races' };
+        if (isWindow(o.name)) return { kind: 'window' };
         const painting = paintingFor(o.name);
         if (painting) return { kind: 'painting', painting };
         // The records filed in the rack open their own tracklist; the other sleeves open the crate.
@@ -370,7 +382,8 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
     const canvas = useThree((s) => s.gl.domElement);
 
     // While looking around the room, the bike links to Strava, the records open their tracklists,
-    // the paintings open their stories and the tri bag unfolds the race calendar.
+    // the paintings open their stories and the tri bag unfolds the race calendar
+    // and the window switches between home and Rotterdam.
     const onRoomHover = useCallback(
         (e: ThreeEvent<PointerEvent>) => {
             // Only the nearest hit counts, not whatever is behind it.
@@ -394,6 +407,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             else if (target?.kind === 'album') onAlbumClick(target.album);
             else if (target?.kind === 'painting') onPaintingClick(target.painting);
             else if (target?.kind === 'races') onRacesClick();
+            else if (target?.kind === 'window') toggleWindowPlace();
         },
         [zoomed, onAlbumClick, onPaintingClick, onRacesClick],
     );
@@ -408,6 +422,8 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
                 mesh.visible = false;
                 return;
             }
+            // The view outside sits behind the wall: it neither casts nor catches the room's shadows.
+            if (isInWindowView(mesh)) return;
             mesh.castShadow = !/glass/i.test(mesh.name);
             mesh.receiveShadow = true;
 
@@ -432,6 +448,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             <Books scene={scene} zoomed={zoomed} onSelect={onBooksClick} />
             <Vinyls zoomed={zoomed} onSelect={onAlbumClick} />
             <RecordRack scene={scene} zoomed={zoomed} />
+            <WindowView scene={scene} />
             <CameraRig
                 zoomed={zoomed}
                 hero={hero}

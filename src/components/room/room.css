@@ -804,3 +804,28 @@
     font-size: 32px;
     line-height: var(--race-line);
 }
+
+/* Which view is outside the window, shown for a moment when it's switched. */
+.room-window-note {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    z-index: 100000;
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    background: rgba(22, 22, 26, 0.85);
+    color: rgba(255, 244, 230, 0.9);
+    font-family: Terminal, monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -6px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.room-window-note.visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}

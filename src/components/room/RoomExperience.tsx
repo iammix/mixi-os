@@ -9,6 +9,7 @@ import MusicToggle from './MusicToggle';
 import PaintingInfo from './PaintingInfo';
 import RaceCalendar from './RaceCalendar';
 import RoomScene from './RoomScene';
+import { WINDOW_PLACES, getWindowPlace, subscribeWindowPlace } from './windowState';
 import { registerScreenOverlay } from './screenSpace';
 import './room.css';
 
@@ -40,6 +41,21 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
     const [racesOpen, setRacesOpen] = useState(false);
     const openRaces = useCallback(() => setRacesOpen(true), []);
     const closeRaces = useCallback(() => setRacesOpen(false), []);
+    // A small note saying which view is outside the window, shown for a moment when it's switched.
+    const [windowNote, setWindowNote] = useState<string | null>(null);
+    useEffect(() => {
+        let timer = 0;
+        const unsubscribe = subscribeWindowPlace(() => {
+            const { name, note } = WINDOW_PLACES[getWindowPlace()];
+            setWindowNote(`${name} · ${note}`);
+            clearTimeout(timer);
+            timer = window.setTimeout(() => setWindowNote(null), 2600);
+        });
+        return () => {
+            unsubscribe();
+            clearTimeout(timer);
+        };
+    }, []);
     const popupOpenRef = useRef(false);
     popupOpenRef.current = booksOpen || album !== null || painting !== null || racesOpen;
     const screenOverlay = useRef<HTMLDivElement>(null);
@@ -111,7 +127,7 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
                 className="room-canvas"
                 shadows
                 dpr={[1, 2]}
-                gl={{ antialias: true, toneMapping: THREE.AgXToneMapping, toneMappingExposure: 1.1 }}
+                gl={{ antialias: true, stencil: true, toneMapping: THREE.AgXToneMapping, toneMappingExposure: 1.1 }}
             >
                 <Suspense fallback={null}>
                     <RoomScene
@@ -136,6 +152,10 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
             {/* Always mounted so the app keeps running on the monitor when zoomed out. */}
             <div ref={screenOverlay} className={`room-app ${phase === 'app' ? 'interactive' : ''}`}>
                 {children}
+            </div>
+
+            <div className={`room-window-note ${windowNote ? 'visible' : ''}`} aria-live="polite">
+                {windowNote}
             </div>
 
             <MusicToggle />
