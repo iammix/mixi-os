@@ -17,6 +17,8 @@ import { getRevealedRecord, isRackSleeve, rackAlbumOf, setRackHover } from './ra
 import TrainingBoard from './TrainingBoard';
 import { isTrainingBoard } from './training';
 import WallClock from './WallClock';
+import DrumPad from './DrumPad';
+import { isDrumPad } from './beats';
 
 export const MODEL_URL = `${import.meta.env.BASE_URL}models/room.glb`;
 const DRACO_URL = `${import.meta.env.BASE_URL}draco/`;
@@ -306,6 +308,8 @@ type RoomSceneProps = {
     onRacesClick: () => void;
     /** The cork board above the bike was clicked: show it up close. */
     onTrainingClick: () => void;
+    /** The drum pad by the turntable was clicked: open it up close. */
+    onPadClick: () => void;
 };
 
 type Clickable =
@@ -315,6 +319,7 @@ type Clickable =
     | { kind: 'races' }
     | { kind: 'training' }
     | { kind: 'speaker' }
+    | { kind: 'pad' }
     | { kind: 'window' };
 
 /** What clicking this part of the room does, if anything. */
@@ -323,6 +328,7 @@ const clickableFor = (object: THREE.Object3D | null): Clickable | null => {
         if (o.name === BIKE_ROOT) return { kind: 'bike' };
         if (opensRaceCalendar(o.name)) return { kind: 'races' };
         if (isTrainingBoard(o.name)) return { kind: 'training' };
+        if (isDrumPad(o.name)) return { kind: 'pad' };
         // Either speaker (its parts, or the group RoomAnimations puts them in) skips to the next song.
         if (/^Speaker[ _]/.test(o.name)) return { kind: 'speaker' };
         if (isWindow(o.name)) return { kind: 'window' };
@@ -338,7 +344,7 @@ const clickableFor = (object: THREE.Object3D | null): Clickable | null => {
     return null;
 };
 
-const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, onBooksClick, onAlbumClick, onPaintingClick, onRacesClick, onTrainingClick }) => {
+const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, onBooksClick, onAlbumClick, onPaintingClick, onRacesClick, onTrainingClick, onPadClick }) => {
     const { scene } = useGLTF(MODEL_URL, DRACO_URL);
     const { hero, screen, screenSize } = useRoomPoses(scene);
     useScreenAspect(screenSize);
@@ -346,8 +352,8 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
 
     // While looking around the room, the bike links to Strava, the records open their tracklists,
     // the paintings open their stories, the tri bag unfolds the race calendar, the cork board
-    // comes up close, the speakers skip to the next song and the window switches between home and
-    // Rotterdam.
+    // comes up close, the speakers skip to the next song, the drum pad opens up and the window
+    // switches between home and Rotterdam.
     const onRoomHover = useCallback(
         (e: ThreeEvent<PointerEvent>) => {
             // Only the nearest hit counts, not whatever is behind it.
@@ -373,9 +379,10 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             else if (target?.kind === 'races') onRacesClick();
             else if (target?.kind === 'training') onTrainingClick();
             else if (target?.kind === 'speaker') playNext();
+            else if (target?.kind === 'pad') onPadClick();
             else if (target?.kind === 'window') toggleWindowPlace();
         },
-        [zoomed, onAlbumClick, onPaintingClick, onRacesClick, onTrainingClick],
+        [zoomed, onAlbumClick, onPaintingClick, onRacesClick, onTrainingClick, onPadClick],
     );
 
     useEffect(() => {
@@ -416,6 +423,7 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
             <RecordRack scene={scene} zoomed={zoomed} />
             <WallClock scene={scene} />
             <TrainingBoard scene={scene} />
+            <DrumPad scene={scene} />
             <WindowView scene={scene} />
             <CameraRig
                 zoomed={zoomed}

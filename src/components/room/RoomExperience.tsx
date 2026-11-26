@@ -10,6 +10,7 @@ import PaintingInfo from './PaintingInfo';
 import RaceCalendar from './RaceCalendar';
 import RoomScene from './RoomScene';
 import TrainingBoardCloseUp from './TrainingBoardCloseUp';
+import DrumPadPanel from './DrumPadPanel';
 import { WINDOW_PLACES, getWindowPlace, subscribeWindowPlace } from './windowState';
 import { registerScreenOverlay } from './screenSpace';
 import './room.css';
@@ -45,6 +46,9 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
     const [trainingOpen, setTrainingOpen] = useState(false);
     const openTraining = useCallback(() => setTrainingOpen(true), []);
     const closeTraining = useCallback(() => setTrainingOpen(false), []);
+    const [padOpen, setPadOpen] = useState(false);
+    const openPad = useCallback(() => setPadOpen(true), []);
+    const closePad = useCallback(() => setPadOpen(false), []);
     // A small note saying which view is outside the window, shown for a moment when it's switched.
     const [windowNote, setWindowNote] = useState<string | null>(null);
     useEffect(() => {
@@ -61,7 +65,7 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
         };
     }, []);
     const popupOpenRef = useRef(false);
-    popupOpenRef.current = booksOpen || album !== null || painting !== null || racesOpen || trainingOpen;
+    popupOpenRef.current = booksOpen || album !== null || painting !== null || racesOpen || trainingOpen || padOpen;
     const screenOverlay = useRef<HTMLDivElement>(null);
     useEffect(() => {
         registerScreenOverlay(screenOverlay.current);
@@ -143,6 +147,7 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
                         onPaintingClick={setPainting}
                         onRacesClick={openRaces}
                         onTrainingClick={openTraining}
+                        onPadClick={openPad}
                     />
                 </Suspense>
             </Canvas>
@@ -174,6 +179,8 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
             {racesOpen && <RaceCalendar onClose={closeRaces} />}
 
             {trainingOpen && <TrainingBoardCloseUp onClose={closeTraining} />}
+
+            {padOpen && <DrumPadPanel onClose={closePad} />}
 
             {phase === 'app' && (
                 <button className="room-exit" onClick={leave} aria-label="Back to the room">
