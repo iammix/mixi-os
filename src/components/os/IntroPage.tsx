@@ -67,8 +67,8 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart }) => {
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    width: '100vw',
-    height: '100vh',
+    width: '100%',
+    height: '100%',
     backgroundColor: 'black',
     color: 'white',
     fontFamily: 'Courier New, monospace',

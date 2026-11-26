@@ -6,7 +6,7 @@ import Icon from '../general/Icon';
 import Button from './Button';
 import DragIndicator from './DragIndicator';
 import ResizeIndicator from './ResizeIndicator';
-import { clientToScreen } from '../room/screenSpace';
+import { clientToScreen, getScreenSize } from '../room/screenSpace';
 
 export interface WindowProps {
     children?: React.ReactNode;
@@ -190,8 +190,9 @@ const Window: React.FC<WindowProps> = (props) => {
                 top,
                 left,
             });
-            setWidth(window.innerWidth);
-            setHeight(window.innerHeight - 32);
+            const screenSize = getScreenSize();
+            setWidth(screenSize.width);
+            setHeight(screenSize.height - 32);
             setTop(0);
             setLeft(0);
             setIsMaximized(true);

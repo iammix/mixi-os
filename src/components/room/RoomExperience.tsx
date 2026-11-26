@@ -2,7 +2,9 @@ import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react
 import { Canvas } from '@react-three/fiber';
 import { useProgress } from '@react-three/drei';
 import * as THREE from 'three';
+import AlbumTracklist from './AlbumTracklist';
 import BookShelf from './BookShelf';
+import { getNowPlaying } from './musicState';
 import MusicToggle from './MusicToggle';
 import RoomScene from './RoomScene';
 import { registerScreenOverlay } from './screenSpace';
@@ -28,8 +30,11 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
     const [booksOpen, setBooksOpen] = useState(false);
     const openBooks = useCallback(() => setBooksOpen(true), []);
     const closeBooks = useCallback(() => setBooksOpen(false), []);
-    const booksOpenRef = useRef(booksOpen);
-    booksOpenRef.current = booksOpen;
+    const [album, setAlbum] = useState<string | null>(null);
+    const openAlbum = useCallback((albumId?: string) => setAlbum(albumId ?? getNowPlaying().albumId), []);
+    const closeAlbum = useCallback(() => setAlbum(null), []);
+    const popupOpenRef = useRef(false);
+    popupOpenRef.current = booksOpen || album !== null;
     const screenOverlay = useRef<HTMLDivElement>(null);
     useEffect(() => {
         registerScreenOverlay(screenOverlay.current);
@@ -58,8 +63,8 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
 
     useEffect(() => {
         const onWheel = (e: WheelEvent) => {
-            // Scrolling inside the book pop-up shouldn't zoom into the computer behind it.
-            if (e.deltaY > 0 && !booksOpenRef.current) enter();
+            // Scrolling inside a pop-up shouldn't zoom into the computer behind it.
+            if (e.deltaY > 0 && !popupOpenRef.current) enter();
         };
         const onKey = (e: KeyboardEvent) => {
             if (e.key === 'Escape') leave();
@@ -73,7 +78,7 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
         const onTouchMove = (e: TouchEvent) => {
             const y = e.touches[0]?.clientY;
             const x = e.touches[0]?.clientX;
-            if (touchStartY === null || y === undefined || x === undefined) return;
+            if (popupOpenRef.current || touchStartY === null || y === undefined || x === undefined) return;
             // A mostly-vertical upward swipe zooms in; sideways drags turn the room instead.
             if (touchStartY - y > SWIPE_THRESHOLD && Math.abs(touchStartY - y) > 2 * Math.abs(x - touchStartX)) {
                 touchStartY = null;
@@ -102,7 +107,7 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
                 gl={{ antialias: true, toneMapping: THREE.AgXToneMapping, toneMappingExposure: 1.1 }}
             >
                 <Suspense fallback={null}>
-                    <RoomScene zoomed={zoomed} screenOverlay={screenOverlay} onArrive={handleArrive} onBooksClick={openBooks} />
+                    <RoomScene zoomed={zoomed} screenOverlay={screenOverlay} onArrive={handleArrive} onBooksClick={openBooks} onAlbumClick={openAlbum} />
                 </Suspense>
             </Canvas>
 
@@ -121,6 +126,8 @@ const RoomExperience: React.FC<RoomExperienceProps> = ({ children }) => {
             <MusicToggle />
 
             {booksOpen && <BookShelf onClose={closeBooks} />}
+
+            {album && <AlbumTracklist albumId={album} onChange={setAlbum} onClose={closeAlbum} />}
 
             {phase === 'app' && (
                 <button className="room-exit" onClick={leave} aria-label="Back to the room">

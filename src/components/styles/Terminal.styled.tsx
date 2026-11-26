@@ -6,7 +6,7 @@ export const Wrapper = styled.div`
 
   display: flex;
   flex-direction: column-reverse;
-  max-height: calc(100vh - 2rem);
+  max-height: calc(100cqh - 2rem);
   overflow-y: auto;
 `;
 
@@ -23,19 +23,19 @@ export const MobileSpan = styled.span`
   line-height: 1.5rem;
   margin-right: 0.75rem;
 
-  @media (min-width: 550px) {
+  @container (min-width: 550px) {
     display: none;
   }
 `;
 
 export const MobileBr = styled.br`
-  @media (min-width: 550px) {
+  @container (min-width: 550px) {
     display: none;
   }
 `;
 
 export const Form = styled.form`
-  @media (min-width: 550px) {
+  @container (min-width: 550px) {
     display: flex;
   }
 `;
@@ -43,7 +43,7 @@ export const Form = styled.form`
 export const Input = styled.input`
   flex-grow: 1;
 
-  @media (max-width: 550px) {
+  @container (max-width: 550px) {
     min-width: 85%;
   }
 `;

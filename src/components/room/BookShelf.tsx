@@ -26,6 +26,14 @@ const BOOKS = [
         spine: '#2f4a3a',
         ink: '#d8c08a',
     },
+    {
+        title: 'Ethics',
+        author: 'Baruch Spinoza',
+        year: '1677',
+        note: 'God, nature and the mind laid out like geometry, axiom by axiom - and a way to freedom through understanding what moves us.',
+        spine: '#5a1f24',
+        ink: '#d8c08a',
+    },
 ];
 
 type BookShelfProps = {
@@ -59,7 +67,7 @@ const BookShelf: React.FC<BookShelfProps> = ({ onClose }) => {
                         esc
                     </button>
                 </div>
-                <p className="room-books-intro">three books i'd recommend</p>
+                <p className="room-books-intro">four books i'd recommend</p>
                 <ol className="room-books-list">
                     {BOOKS.map((book) => (
                         <li key={book.title} className="room-book">

@@ -70,6 +70,13 @@ const pikettySpine = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
 
 const STACK: Book[] = [
     {
+        size: [0.18, 0.034, 0.255],
+        cloth: '#5a1f24',
+        turn: -0.06,
+        offset: [-0.002, 0.003],
+        spine: clothSpine('#5a1f24', 'ETHICS', 'SPINOZA'),
+    },
+    {
         size: [0.175, 0.03, 0.25],
         cloth: '#2f4a3a',
         turn: 0.12,

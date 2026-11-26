@@ -72,7 +72,10 @@
 
 .room-app {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    /* Width and height are the monitor's resolution, set from screenSpace.ts. */
+    container-type: size;
     overflow: hidden;
     transform-origin: 0 0;
     /* Shown once the camera rig has placed it on the monitor. */
@@ -304,4 +307,114 @@
     .room-books {
         animation: none;
     }
+}
+
+/* Tracklist pop-up for the records (shares the book pop-up's panel). */
+.room-books.room-album {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.room-album-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 14px 0 12px;
+}
+
+.room-album-cover {
+    flex: none;
+    width: 96px;
+    height: 96px;
+    border-radius: 3px;
+    object-fit: cover;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.room-album-info {
+    display: block;
+    min-width: 0;
+}
+
+.room-album-tracks {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    margin: 0;
+    padding: 8px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    list-style: none;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.room-album-tracks li {
+    display: block;
+}
+
+.room-album-track {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    width: 100%;
+    padding: 4px 6px;
+    margin: 0 -6px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.room-album-track:hover,
+.room-album-track:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+    outline: none;
+}
+
+.room-album-track.current {
+    color: #ffc78c;
+}
+
+.room-album-name {
+    flex: 1;
+    min-width: 0;
+}
+
+.room-album-play {
+    flex: none;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.room-album-track:hover .room-album-play,
+.room-album-track:focus-visible .room-album-play {
+    opacity: 0.7;
+}
+
+.room-album-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    opacity: 0.55;
+}
+
+.room-album-no {
+    flex: none;
+    opacity: 0.5;
+    font-variant-numeric: tabular-nums;
+}
+
+.room-album-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    margin-top: 8px;
 }

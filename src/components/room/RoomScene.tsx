@@ -4,8 +4,14 @@ import { OrthographicCamera, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import AlbumCovers from './AlbumCovers';
+import { framedAlbumFor } from './albums';
+import { getNowPlaying } from './musicState';
 import Books from './Books';
 import { CoffeeSteam, RecordPlayerAndSpeakers } from './RoomAnimations';
+import { getScreenSize, setScreenAspect } from './screenSpace';
+import RecordRack from './RecordRack';
+import Vinyls from './Vinyls';
+import { getRevealedRecord, isRackSleeve, rackAlbumOf, setRackHover } from './rackState';
 
 export const MODEL_URL = `${import.meta.env.BASE_URL}models/room.glb`;
 const DRACO_URL = `${import.meta.env.BASE_URL}draco/`;
@@ -27,7 +33,7 @@ const MATERIAL_TWEAKS: [RegExp, (m: THREE.MeshStandardMaterial) => void][] = [
     // Hue/Saturation "Value" boost on the oak textures.
     [/oak floor tone/i, (m) => m.color.setScalar(1.5)],
     [/natural oak/i, (m) => m.color.setScalar(1.25)],
-    // Turned-off panel around the app (visible when the browser's aspect differs from the monitor's).
+    // Display panel behind the app; kept black so nothing glows through at its edges.
     [/display dark editor/i, (m) => {
         m.color.set('#000000');
         m.emissive.set('#000000');
@@ -115,6 +121,13 @@ function useRoomPoses(scene: THREE.Group) {
 
         return { hero, screen, screenSize };
     }, [scene]);
+}
+
+/** Gives the app the monitor's aspect ratio once the model has loaded. */
+function useScreenAspect(screenSize: THREE.Vector3) {
+    useEffect(() => {
+        if (screenSize.x > 0 && screenSize.y > 0) setScreenAspect(screenSize.x / screenSize.y);
+    }, [screenSize]);
 }
 
 type CameraRigProps = {
@@ -243,12 +256,12 @@ const CameraRig: React.FC<CameraRigProps> = ({ zoomed, hero, screen, screenSize,
         cam.updateProjectionMatrix();
         cam.updateMatrixWorld();
 
-        // Pin the app's DOM element (viewport-sized) onto the monitor, fitted inside the display
-        // with the viewport's aspect ratio so the app's layout isn't stretched.
+        // Pin the app's DOM element (rendered at the monitor's own resolution) onto the display.
         const overlay = screenOverlay.current;
         if (overlay) {
-            const h = Math.min(screenSize.y, screenSize.x / aspect);
-            const w = h * aspect;
+            const px = getScreenSize();
+            const w = screenSize.x;
+            const h = screenSize.y;
             const c = screen.target;
             const toPx = (v: THREE.Vector3) => {
                 v.project(cam);
@@ -258,9 +271,9 @@ const CameraRig: React.FC<CameraRigProps> = ({ zoomed, hero, screen, screenSize,
             const tl = toPx(tmp.tl.set(c.x - w / 2, c.y + h / 2, c.z));
             const tr = toPx(tmp.tr.set(c.x + w / 2, c.y + h / 2, c.z));
             const bl = toPx(tmp.bl.set(c.x - w / 2, c.y - h / 2, c.z));
-            overlay.style.transform = `matrix(${(tr.x - tl.x) / size.width}, ${(tr.y - tl.y) / size.width}, ${
-                (bl.x - tl.x) / size.height
-            }, ${(bl.y - tl.y) / size.height}, ${tl.x}, ${tl.y})`;
+            overlay.style.transform = `matrix(${(tr.x - tl.x) / px.width}, ${(tr.y - tl.y) / px.width}, ${
+                (bl.x - tl.x) / px.height
+            }, ${(bl.y - tl.y) / px.height}, ${tl.x}, ${tl.y})`;
             overlay.style.visibility = 'visible';
         }
     });
@@ -320,37 +333,58 @@ type RoomSceneProps = {
     screenOverlay: React.RefObject<HTMLDivElement>;
     onArrive: (zoomed: boolean) => void;
     onBooksClick: () => void;
+    /** An album was clicked; `undefined` means the shelf as a whole (opens on what's playing). */
+    onAlbumClick: (albumId?: string) => void;
 };
 
-const isBikePart = (object: THREE.Object3D | null) => {
-    for (let o = object; o; o = o.parent) if (BIKE_PARTS.test(o.name)) return true;
-    return false;
+type Clickable = { kind: 'bike' } | { kind: 'album'; album?: string };
+
+/** What clicking this part of the room does, if anything. */
+const clickableFor = (object: THREE.Object3D | null): Clickable | null => {
+    for (let o = object; o; o = o.parent) {
+        if (BIKE_PARTS.test(o.name)) return { kind: 'bike' };
+        const album = framedAlbumFor(o.name);
+        if (album) return { kind: 'album', album };
+        // The records filed in the rack open their own tracklist; the other sleeves open the crate.
+        const racked = rackAlbumOf(o);
+        if (racked) return { kind: 'album', album: racked };
+        if (isRackSleeve(o)) return { kind: 'album', album: getRevealedRecord() };
+        // The record on the turntable (grouped in RoomAnimations) shows what's playing.
+        if (o.name === 'Record disc') return { kind: 'album', album: getNowPlaying().albumId };
+    }
+    return null;
 };
 
-const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, onBooksClick }) => {
+const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, onBooksClick, onAlbumClick }) => {
     const { scene } = useGLTF(MODEL_URL, DRACO_URL);
     const { hero, screen, screenSize } = useRoomPoses(scene);
+    useScreenAspect(screenSize);
     const canvas = useThree((s) => s.gl.domElement);
 
-    // The bike links to Strava while looking around the room.
-    const onBikeHover = useCallback(
+    // While looking around the room, the bike links to Strava and the records open their tracklists.
+    const onRoomHover = useCallback(
         (e: ThreeEvent<PointerEvent>) => {
             // Only the nearest hit counts, not whatever is behind it.
             e.stopPropagation();
-            canvas.style.cursor = !zoomed && isBikePart(e.object) ? 'pointer' : '';
+            canvas.style.cursor = !zoomed && clickableFor(e.object) ? 'pointer' : '';
+            // Pointing at the record rack slides its sleeves out (see RecordRack).
+            setRackHover(!zoomed && isRackSleeve(e.object) ? e.object : null);
         },
         [canvas, zoomed],
     );
-    const onBikeLeave = useCallback(() => {
+    const onRoomLeave = useCallback(() => {
         canvas.style.cursor = '';
+        setRackHover(null);
     }, [canvas]);
-    const onBikeClick = useCallback(
+    const onRoomClick = useCallback(
         (e: ThreeEvent<MouseEvent>) => {
             e.stopPropagation();
-            if (zoomed || e.delta > CLICK_TOLERANCE || !isBikePart(e.object)) return;
-            window.open(BIKE_URL, '_blank', 'noopener,noreferrer');
+            if (zoomed || e.delta > CLICK_TOLERANCE) return;
+            const target = clickableFor(e.object);
+            if (target?.kind === 'bike') window.open(BIKE_URL, '_blank', 'noopener,noreferrer');
+            else if (target?.kind === 'album') onAlbumClick(target.album);
         },
-        [zoomed],
+        [zoomed, onAlbumClick],
     );
 
     useEffect(() => {
@@ -381,11 +415,13 @@ const RoomScene: React.FC<RoomSceneProps> = ({ zoomed, screenOverlay, onArrive, 
     return (
         <>
             <Lights />
-            <primitive object={scene} onPointerMove={onBikeHover} onPointerOut={onBikeLeave} onClick={onBikeClick} />
+            <primitive object={scene} onPointerMove={onRoomHover} onPointerOut={onRoomLeave} onClick={onRoomClick} />
             <RecordPlayerAndSpeakers scene={scene} />
             <CoffeeSteam scene={scene} />
             <Books scene={scene} zoomed={zoomed} onSelect={onBooksClick} />
             <AlbumCovers scene={scene} />
+            <Vinyls zoomed={zoomed} onSelect={onAlbumClick} />
+            <RecordRack scene={scene} zoomed={zoomed} />
             <CameraRig
                 zoomed={zoomed}
                 hero={hero}

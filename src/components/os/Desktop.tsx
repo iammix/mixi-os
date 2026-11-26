@@ -201,8 +201,8 @@ const Desktop: React.FC<DesktopProps> = () => {
         style={{
             opacity: fadingOut ? 0 : 1,
             transition: 'opacity 1s ease',
-            width: '100vw',
-            height: '100vh',
+            width: '100%',
+            height: '100%',
             backgroundColor: 'black', // Keep background consistent
           }}>
             <IntroPage onStart={()=> {
